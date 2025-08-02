@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: prism
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: src.settings
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
+      REDIS_URL: redis://redis:6379/0
+      SKIP_MIGRATE: "0"
+      SKIP_COLLECTSTATIC: "0"
+    command: gunicorn src.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: src.settings
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
+      REDIS_URL: redis://redis:6379/0
+      SKIP_MIGRATE: "1"
+      SKIP_COLLECTSTATIC: "1"
+    command: celery -A src worker -l info
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: src.settings
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
+      REDIS_URL: redis://redis:6379/0
+      SKIP_MIGRATE: "1"
+      SKIP_COLLECTSTATIC: "1"
+    command: celery -A src beat -l info
+
+volumes:
+  postgres_data:
