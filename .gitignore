@@ -136,6 +136,9 @@ celerybeat.pid
 *.aof
 *.pid
 
+# Local container data
+data/
+
 # RabbitMQ
 mnesia/
 rabbitmq/

@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
@@ -73,6 +73,3 @@ services:
       SKIP_MIGRATE: "1"
       SKIP_COLLECTSTATIC: "1"
     command: celery -A src beat -l info
-
-volumes:
-  postgres_data:
