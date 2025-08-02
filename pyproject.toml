@@ -1,0 +1,56 @@
+[project]
+name = "prism-ai-agent"
+version = "0.1.0"
+description = "Prism AI Agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django",
+    "celery",
+    "redis",
+    "django-environ",
+    "django-htmx",
+    "psycopg2-binary",
+    "pillow",
+    "gunicorn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "pre-commit",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+indent-width = 4
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "build",
+    "dist",
+    "node_modules",
+]
+extend-exclude = [
+    "**/migrations/**",
+    "**/static/**",
+]
+unsafe-fixes = false
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["F405"]
+unfixable = ["E741", "E742", "E743"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+skip-magic-trailing-comma = false
