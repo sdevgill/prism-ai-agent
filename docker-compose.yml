@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/var/www/prism-ai-agent
     env_file:
       - .env
     depends_on:
@@ -41,7 +41,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/var/www/prism-ai-agent
     env_file:
       - .env
     depends_on:
@@ -60,7 +60,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/var/www/prism-ai-agent
     env_file:
       - .env
     depends_on:

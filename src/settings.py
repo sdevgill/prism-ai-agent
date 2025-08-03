@@ -26,7 +26,10 @@ if os.path.isfile(env_file):
 
 # Core ----------------------------------------------------------------------
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%!j(a=!vl4hb17k3&o_mom@q2_t$4(p2xox*8_b+u27*h=6bpn"
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-%!j(a=!vl4hb17k3&o_mom@q2_t$4(p2xox*8_b+u27*h=6bpn",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)
