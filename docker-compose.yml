@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: prism
+      POSTGRES_DB: prism-ai-agent
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -28,8 +28,8 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: src.settings
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "0"
       SKIP_COLLECTSTATIC: "0"
     command: gunicorn src.wsgi:application --bind 0.0.0.0:8000
@@ -49,8 +49,8 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: src.settings
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "1"
       SKIP_COLLECTSTATIC: "1"
     command: celery -A src worker -l info
@@ -68,8 +68,8 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: src.settings
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/prism
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "1"
       SKIP_COLLECTSTATIC: "1"
     command: celery -A src beat -l info
