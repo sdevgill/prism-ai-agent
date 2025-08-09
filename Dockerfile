@@ -3,6 +3,7 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/var/cache/uv \
+    UV_PROJECT_ENVIRONMENT=/opt/uv \
     WORKDIR=/var/www/prism-ai-agent
 
 WORKDIR ${WORKDIR}
@@ -23,7 +24,7 @@ ENV PATH="/root/.local/bin:/root/.cargo/bin:$PATH"
 # Install Python dependencies using uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev && rm -rf /root/.cache
-ENV PATH="${WORKDIR}/.venv/bin:$PATH"
+ENV PATH="/opt/uv/bin:$PATH"
 
 COPY . .
 
