@@ -23,6 +23,7 @@ dev = [
     "black",
     "ruff",
     "pre-commit",
+    "djhtml",
 ]
 
 [tool.black]

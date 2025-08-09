@@ -283,6 +283,15 @@ wheels = [
 ]
 
 [[package]]
+name = "djhtml"
+version = "3.0.9"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/ad/5f36310d4306480af03a4fab7d06c2bdf94a9c35c9e2b6a1d98f2ac0036e/djhtml-3.0.9.tar.gz", hash = "sha256:b21d7e6836b5aa8fb415233eb853ad14fdc26694f19ed17158ba71c97fa23f39", size = 28351, upload-time = "2025-08-12T19:53:06.746Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d2/30/8c26e25e6bdb0dfd2c7bb3e7b0c7cd499a597cb720d1ea36f250e0692f46/djhtml-3.0.9-py3-none-any.whl", hash = "sha256:1bcde56d0d469546f391a269d84c71df4054c7df73ad5c51572b38a611156dc4", size = 26613, upload-time = "2025-08-14T07:17:53.531Z" },
+]
+
+[[package]]
 name = "filelock"
 version = "3.19.1"
 source = { registry = "https://pypi.org/simple" }
@@ -484,6 +493,7 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "black" },
+    { name = "djhtml" },
     { name = "pre-commit" },
     { name = "ruff" },
 ]
@@ -497,6 +507,7 @@ requires-dist = [
     { name = "django-environ" },
     { name = "django-htmx" },
     { name = "django-tailwind-cli" },
+    { name = "djhtml", marker = "extra == 'dev'" },
     { name = "gunicorn" },
     { name = "pillow" },
     { name = "pre-commit", marker = "extra == 'dev'" },
