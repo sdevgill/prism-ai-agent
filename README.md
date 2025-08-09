@@ -57,7 +57,22 @@ Run everything from the host using Docker so container networking (hosts `db`, `
 - Collect static files: `docker compose exec web python manage.py collectstatic --noinput`
 - Open a Django shell: `docker compose exec web python manage.py shell`
 - Tail logs: `docker compose logs -f web` or `docker compose logs -f worker`
-- Rebuild images after dependency changes: `docker compose build`
+- Rebuild images after dependency edits: `docker compose build`
+
+--------------------------------------------------------------------------------------
+
+## Database Access From GUI Clients
+
+Have the Postgres container running (`docker compose up db`) and use these settings in TablePlus, DataGrip, or any SQL client:
+
+- Host: `localhost`
+- Port: `5432`
+- Database: `prism-ai-agent`
+- User: `postgres`
+- Password: `postgres`
+- SSL: disabled / none
+
+TablePlus: create a Postgres connection, fill in the values, click **Test**, then **Connect**. DataGrip: add a PostgreSQL datasource, enter the same values, press **Test Connection** (accept the driver download if prompted), then save the datasource.
 
 --------------------------------------------------------------------------------------
 
@@ -65,4 +80,7 @@ Run everything from the host using Docker so container networking (hosts `db`, `
 
 Application dependencies live in `pyproject.toml` and are installed inside the container’s uv-managed virtualenv at `/var/www/prism-ai-agent/.venv`. Core packages include Django, **Celery**, **Redis**, django-environ, django-htmx, psycopg2-binary, Pillow, and **gunicorn**. Optional tooling (**black**, **ruff**, **pre-commit**) sits under the `dev` extra for local linting/formatting if desired.
 
-Keep `./data/postgres` under version control ignore rules so databases persist between runs without polluting commits.
+- Keep `./data/postgres` under version control ignore rules so databases persist between runs without polluting commits.
+- Remove `./data/postgres` before restarting if you need a clean database.
+- Keep `docker compose logs -f worker` running while developing Celery tasks to watch job output.
+- Use `docker compose exec web bash` for an interactive shell inside the application container.
