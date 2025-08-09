@@ -36,6 +36,24 @@ services:
     ports:
       - "8000:8000"
 
+  tailwind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/prism-ai-agent
+    env_file:
+      - .env
+    depends_on:
+      - web
+    environment:
+      DJANGO_SETTINGS_MODULE: src.settings
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      SKIP_MIGRATE: "true"
+      SKIP_COLLECTSTATIC: "true"
+    command: python manage.py tailwind start
+
   worker:
     build:
       context: .
@@ -52,7 +70,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "true"
-      SKIP_COLLECTSTATIC: "false"
+      SKIP_COLLECTSTATIC: "true"
     command: celery -A src worker -l info
 
   beat:
@@ -71,6 +89,5 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "true"
-      SKIP_COLLECTSTATIC: "false"
+      SKIP_COLLECTSTATIC: "true"
     command: celery -A src beat -l info
-

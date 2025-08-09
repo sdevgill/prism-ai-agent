@@ -15,6 +15,8 @@ RUN apt-get update \
         libpq-dev \
         libjpeg62-turbo-dev \
         zlib1g-dev \
+        nodejs \
+        npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
