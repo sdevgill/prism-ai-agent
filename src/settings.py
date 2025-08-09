@@ -49,13 +49,18 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "django_htmx",
+    "tailwind",
     # Project apps
     "src.accounts",
     "src.sources",
     "src.runs",
     "src.assets",
     "src.ui",
+    "theme",
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append("django_browser_reload")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -68,6 +73,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(1, "django_browser_reload.middleware.BrowserReloadMiddleware")
 
 ROOT_URLCONF = "src.urls"
 
@@ -145,6 +153,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
+
+# Frontend ------------------------------------------------------------------
+TAILWIND_APP_NAME = "theme"
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])

@@ -14,6 +14,8 @@ dependencies = [
     "pillow",
     "gunicorn",
     "whitenoise",
+    "django-tailwind",
+    "django-browser-reload",
 ]
 
 [project.optional-dependencies]
