@@ -34,6 +34,7 @@ Data flow once features are in place will look like this: views accept content â
    ```bash
    docker compose exec web python manage.py migrate
    ```
+   (Runs automatically by default; set `SKIP_MIGRATE=true` to skip during startup.)
 6. (Optional) Create an admin user:
    ```bash
    docker compose exec web python manage.py createsuperuser

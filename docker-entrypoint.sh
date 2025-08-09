@@ -28,11 +28,11 @@ PY
 
 wait_for_db
 
-if [[ "${SKIP_MIGRATE:-0}" != "1" ]]; then
+if [[ "${SKIP_MIGRATE:-false}" != "true" ]]; then
   python manage.py migrate --noinput
 fi
 
-if [[ "${SKIP_COLLECTSTATIC:-0}" != "1" ]]; then
+if [[ "${SKIP_COLLECTSTATIC:-false}" != "true" ]]; then
   python manage.py collectstatic --noinput
 fi
 
