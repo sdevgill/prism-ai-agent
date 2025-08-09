@@ -222,3 +222,6 @@ __marimo__/
 
 # Collected static files
 staticfiles/
+.django_tailwind_cli/
+assets/css/tailwind.css
+assets/css/tailwind.css.map

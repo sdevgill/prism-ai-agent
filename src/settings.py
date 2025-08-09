@@ -40,7 +40,7 @@ ALLOWED_HOSTS = env.list(
 
 # Applications --------------------------------------------------------------
 INSTALLED_APPS = [
-    # Django
+    # Django core apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,15 +48,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
+    # Third-party apps
     "django_htmx",
-    "tailwind",
+    "django_tailwind_cli",
     # Project apps
     "src.accounts",
     "src.sources",
     "src.runs",
     "src.assets",
     "src.ui",
-    "theme",
 ]
 
 if DEBUG:
@@ -143,11 +143,12 @@ USE_TZ = True
 # Static & media -----------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / "assets"]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 if DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+    INTERNAL_IPS = ["127.0.0.1"]
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -156,12 +157,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
-
-# Frontend ------------------------------------------------------------------
-TAILWIND_APP_NAME = "theme"
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])

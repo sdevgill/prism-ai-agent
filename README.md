@@ -79,7 +79,7 @@ TablePlus: create a Postgres connection, fill in the values, click **Test**, the
 
 ## Dependency Stack
 
-Application dependencies live in `pyproject.toml` and are installed inside the container’s uv-managed virtualenv at `/var/www/prism-ai-agent/.venv`. Core packages include Django, **Celery**, **Redis**, django-environ, django-htmx, psycopg2-binary, Pillow, **WhiteNoise**, and **gunicorn**. Optional tooling (**black**, **ruff**, **pre-commit**) sits under the `dev` extra for local linting/formatting if desired.
+Application dependencies live in `pyproject.toml` and are installed inside the container’s uv-managed virtualenv at `/var/www/prism-ai-agent/.venv`. Core packages include Django, **Celery**, **Redis**, django-environ, django-htmx, django-tailwind-cli, psycopg2-binary, Pillow, **WhiteNoise**, and **gunicorn**. Optional tooling (**black**, **ruff**, **pre-commit**) sits under the `dev` extra for local linting/formatting if desired.
 
 - Keep `./data/postgres` under version control ignore rules so databases persist between runs without polluting commits.
 - Remove `./data/postgres` before restarting if you need a clean database.

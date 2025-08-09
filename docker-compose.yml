@@ -21,6 +21,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/var/www/prism-ai-agent
+    tty: true
+    stdin_open: true
     env_file:
       - .env
     depends_on:
@@ -32,27 +34,9 @@ services:
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: ${SKIP_MIGRATE:-false}
       SKIP_COLLECTSTATIC: "false"
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py tailwind runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
-
-  tailwind:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/var/www/prism-ai-agent
-    env_file:
-      - .env
-    depends_on:
-      - web
-    environment:
-      DJANGO_SETTINGS_MODULE: src.settings
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      SKIP_MIGRATE: "true"
-      SKIP_COLLECTSTATIC: "true"
-    command: python manage.py tailwind start
 
   worker:
     build:
