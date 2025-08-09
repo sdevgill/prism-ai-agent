@@ -31,8 +31,8 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: ${SKIP_MIGRATE:-false}
-      SKIP_COLLECTSTATIC: ${SKIP_COLLECTSTATIC:-false}
-    command: gunicorn src.wsgi:application --bind 0.0.0.0:8000
+      SKIP_COLLECTSTATIC: "false"
+    command: python manage.py runserver 0.0.0.0:8000 --reload
     ports:
       - "8000:8000"
 
@@ -52,7 +52,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "true"
-      SKIP_COLLECTSTATIC: "true"
+      SKIP_COLLECTSTATIC: "false"
     command: celery -A src worker -l info
 
   beat:
@@ -71,6 +71,6 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "true"
-      SKIP_COLLECTSTATIC: "true"
+      SKIP_COLLECTSTATIC: "false"
     command: celery -A src beat -l info
 
