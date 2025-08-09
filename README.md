@@ -6,7 +6,7 @@ Prism AI Agent turns long-form written content into a coordinated multimedia cam
 
 ## Project Notes
 
-The stack uses **Python 3.13**, **Django 5**, **Postgres 17**, **Redis 7**, **Celery**, and **Docker** with **uv** managing the virtual environment inside the image. Gunicorn fronts the web service in containers, while bind mounts keep source code and database files in the repository.
+The stack uses **Python 3.13**, **Django 5**, **Postgres 17**, **Redis 7**, **Celery**, **WhiteNoise**, and **Docker** with **uv** managing the virtual environment inside the image. Gunicorn fronts the web service in containers, while bind mounts keep source code and database files in the repository.
 
 Setup notes:
 
@@ -34,7 +34,7 @@ Data flow once features are in place will look like this: views accept content �
    ```bash
    docker compose exec web python manage.py migrate
    ```
-   (Runs automatically by default; set `SKIP_MIGRATE=true` to skip during startup.)
+   (Runs automatically by default; set `SKIP_MIGRATE=true` to skip during startup. Static files collect on every boot.)
 6. (Optional) Create an admin user:
    ```bash
    docker compose exec web python manage.py createsuperuser
@@ -79,7 +79,7 @@ TablePlus: create a Postgres connection, fill in the values, click **Test**, the
 
 ## Dependency Stack
 
-Application dependencies live in `pyproject.toml` and are installed inside the container’s uv-managed virtualenv at `/var/www/prism-ai-agent/.venv`. Core packages include Django, **Celery**, **Redis**, django-environ, django-htmx, psycopg2-binary, Pillow, and **gunicorn**. Optional tooling (**black**, **ruff**, **pre-commit**) sits under the `dev` extra for local linting/formatting if desired.
+Application dependencies live in `pyproject.toml` and are installed inside the container’s uv-managed virtualenv at `/var/www/prism-ai-agent/.venv`. Core packages include Django, **Celery**, **Redis**, django-environ, django-htmx, psycopg2-binary, Pillow, **WhiteNoise**, and **gunicorn**. Optional tooling (**black**, **ruff**, **pre-commit**) sits under the `dev` extra for local linting/formatting if desired.
 
 - Keep `./data/postgres` under version control ignore rules so databases persist between runs without polluting commits.
 - Remove `./data/postgres` before restarting if you need a clean database.

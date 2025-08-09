@@ -32,7 +32,7 @@ services:
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: ${SKIP_MIGRATE:-false}
       SKIP_COLLECTSTATIC: "false"
-    command: python manage.py runserver 0.0.0.0:8000 --reload
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
 
