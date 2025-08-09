@@ -74,4 +74,5 @@ services:
       REDIS_URL: ${REDIS_URL}
       SKIP_MIGRATE: "true"
       SKIP_COLLECTSTATIC: "true"
+      CELERY_BEAT_SCHEDULE_FILENAME: /tmp/celerybeat-schedule
     command: celery -A src beat -l info

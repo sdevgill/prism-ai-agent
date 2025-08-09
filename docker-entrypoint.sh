@@ -33,6 +33,7 @@ if [[ "${SKIP_MIGRATE:-false}" != "true" ]]; then
 fi
 
 if [[ "${SKIP_COLLECTSTATIC:-false}" != "true" ]]; then
+  mkdir -p .django_tailwind_cli
   python manage.py tailwind build
   python manage.py collectstatic --noinput
 fi
