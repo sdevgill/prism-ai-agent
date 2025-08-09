@@ -30,6 +30,7 @@ Data flow once features are in place will look like this: views accept content �
    ```bash
    docker compose up --build
    ```
+   This brings up the Django app, Celery workers, and runs `tailwind runserver` inside the web container so CSS rebuilds automatically in development.
 5. Apply database migrations:
    ```bash
    docker compose exec web python manage.py migrate
@@ -59,6 +60,12 @@ Run everything from the host using Docker so container networking (hosts `db`, `
 - Open a Django shell: `docker compose exec web python manage.py shell`
 - Tail logs: `docker compose logs -f web` or `docker compose logs -f worker`
 - Rebuild images after dependency edits: `docker compose build`
+
+ Tailwind CSS workflow (using `django-tailwind-cli`):
+
+- `docker compose up` runs `python manage.py tailwind build` on startup followed by `python manage.py tailwind runserver`, so in the normal Docker flow you get the initial build and live watcher automatically.
+- If you’re working outside Docker (or just want to run it manually), bootstrap the CLI once with `python manage.py tailwind setup`.
+- For an explicit rebuild, before `collectstatic` in CI, or if you’ve disabled the entrypoint build, run `docker compose exec web python manage.py tailwind build`.
 
 --------------------------------------------------------------------------------------
 
