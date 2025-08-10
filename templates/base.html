@@ -1,0 +1,23 @@
+{% load static tailwind_cli %}
+<!DOCTYPE html>
+<html lang="en" hx-boost="true">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{% block title %}Prism AI Agent{% endblock %}</title>
+        {% tailwind_css %}
+        {% block extra_head %}{% endblock %}
+    </head>
+    <body class="min-h-screen bg-slate-50 text-slate-900" hx-target="#content" hx-swap="innerHTML" hx-ext="class-tools">
+        {% include 'partials/nav.html' %}
+        <main id="content" class="mx-auto w-full max-w-5xl px-4 py-8">
+            {% include 'partials/messages.html' %}
+            {% block content %}{% endblock %}
+        </main>
+        {% include 'partials/footer.html' %}
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-hJKeGhf8AmgsaB4N5Hs2sgWfHoAaoMo4jc+3hV+iRk6w2ZwA58Ua5SzYg1V3oyM4" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script>
+        {% block extra_scripts %}{% endblock %}
+    </body>
+</html>

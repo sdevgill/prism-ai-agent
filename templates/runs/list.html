@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Runs · Prism AI Agent{% endblock %}
+
+{% block content %}
+    <section class="space-y-4">
+        <header>
+            <h1 class="text-2xl font-semibold text-slate-900">Pipeline runs</h1>
+            <p class="text-sm text-slate-600">Track every orchestration run, its steps, and downstream tasks from this control panel.</p>
+        </header>
+        <div class="rounded border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+            Once the state machine lands, this view will list recent runs with HTMX-powered polling for live updates.
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,11 @@
+<nav class="border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
+        <a class="text-lg font-semibold" href="{% url 'ui:home' %}">Prism</a>
+        <ul class="flex items-center gap-4 text-sm font-medium">
+            <li><a class="hover:text-blue-600" href="{% url 'sources:ingest' %}">Sources</a></li>
+            <li><a class="hover:text-blue-600" href="{% url 'runs:list' %}">Runs</a></li>
+            <li><a class="hover:text-blue-600" href="{% url 'assets:library' %}">Assets</a></li>
+            <li><a class="hover:text-blue-600" href="{% url 'accounts:profile' %}">Account</a></li>
+        </ul>
+    </div>
+</nav>
