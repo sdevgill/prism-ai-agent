@@ -1,4 +1,6 @@
-<div role="{{ role }}" class="flex items-start gap-2 rounded border px-4 py-2 text-sm shadow-sm {{ tone }}">
-    <span aria-hidden="true">{{ icon }}</span>
-    <p>{{ message }}</p>
+<div role="{{ role }}" class="flex items-center gap-3 rounded-full border px-4 py-2 text-sm shadow-sm {{ tone }}">
+    <span aria-hidden="true" class="flex h-7 w-7 items-center justify-center rounded-full bg-white/70">
+        <span class="text-base">{{ icon }}</span>
+    </span>
+    <p class="leading-snug">{{ message }}</p>
 </div>

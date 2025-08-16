@@ -1,5 +1,5 @@
 {% if messages %}
-    <section class="space-y-2" hx-swap-oob="true" aria-live="polite" aria-atomic="true">
+    <section class="space-y-2 mb-6" hx-swap-oob="true" aria-live="polite" aria-atomic="true">
         {% for message in messages %}
             {% with level=message.tags|default:'info' %}
                 {% if 'error' in level %}

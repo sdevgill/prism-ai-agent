@@ -1,49 +1,87 @@
 {% extends "base.html" %}
 
-{% block title %}Profile · Prism AI Agent{% endblock %}
+{% block title %}Profile - Prism AI Agent{% endblock %}
 
 {% block content %}
     <section class="space-y-8">
         <header class="space-y-2">
             <h1 class="text-3xl font-semibold text-slate-900">Account settings</h1>
-            <p class="text-sm text-slate-600">Keep your email and password up to date so Prism can secure your projects.</p>
+            <p class="text-sm text-slate-600">Keep your contact details current and refresh passwords whenever you need to</p>
         </header>
 
-        {% if request.user.is_authenticated %}
-            <form method="post" action="{% url 'accounts:profile' %}" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm" hx-post="{% url 'accounts:profile' %}" hx-target="this" hx-swap="outerHTML">
+        <div class="grid gap-6 lg:grid-cols-2">
+            <form method="post" action="{% url 'accounts:profile' %}" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 {% csrf_token %}
-                <div class="space-y-5">
-                    {% include 'partials/components/form_field.html' with field_id='email' label='Email' required=True control_template='accounts/partials/email_control.html' description='Used for sign-in and status notifications.' %}
-                    {% include 'partials/components/form_field.html' with field_id='password' label='Password' required=True control_template='accounts/partials/password_control.html' description='Set a strong password to protect your assets.' %}
-                </div>
+                <input type="hidden" name="form" value="details" />
+                {% if account_form.non_field_errors %}
+                    <p class="text-sm font-medium text-rose-600">{{ account_form.non_field_errors|join:' ' }}</p>
+                {% endif %}
+                {% with input_class='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200' %}
+                    {% for field in account_form %}
+                        {% with field_type=field.field.widget.input_type|default:'text' %}
+                            <div class="space-y-2">
+                                <label for="{{ field.id_for_label }}" class="text-sm font-medium text-slate-700">
+                                    {{ field.label }}{% if field.field.required %} <span class="text-rose-500">*</span>{% endif %}
+                                </label>
+                                <input type="{{ field_type }}"
+                                       name="{{ field.html_name }}"
+                                       id="{{ field.id_for_label }}"
+                                       value="{{ field.value|default_if_none:'' }}"
+                                       placeholder="{{ field.label|capfirst }}"
+                                       class="{{ input_class }}"
+                                       {% if field.name == 'email' %}autocomplete="email"
+                                       {% elif field.name == 'first_name' %}autocomplete="given-name"
+                                       {% elif field.name == 'last_name' %}autocomplete="family-name"
+                                       {% elif field.name == 'company_name' %}autocomplete="organization"
+                                       {% endif %}
+                                       {% if field.field.required %}required{% endif %} />
+                                {% if field.help_text %}
+                                    <p class="text-xs text-slate-500">{{ field.help_text }}</p>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <p class="text-xs font-medium text-rose-600">{{ field.errors|join:' ' }}</p>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    {% endfor %}
+                {% endwith %}
                 <div class="flex gap-3">
-                    {% include 'partials/components/button.html' with label='Save changes' type='submit' %}
-                    {% include 'partials/components/button.html' with label='Reset' type='reset' variant='ghost' %}
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Save changes</button>
+                    <button type="reset" class="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Reset</button>
                 </div>
             </form>
-        {% else %}
-            <div class="grid gap-6 lg:grid-cols-2">
-                <section class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-slate-800">Sign in</h2>
-                    <p class="text-sm text-slate-600">Access your generated assets and continue creating new ones.</p>
-                    <form method="post" action="{% url 'accounts:profile' %}" class="space-y-4">
-                        {% csrf_token %}
-                        {% include 'partials/components/form_field.html' with field_id='login_email' label='Email' required=True control_template='accounts/partials/email_control.html' %}
-                        {% include 'partials/components/form_field.html' with field_id='login_password' label='Password' required=True control_template='accounts/partials/password_control.html' %}
-                        {% include 'partials/components/button.html' with label='Sign in' type='submit' %}
-                    </form>
-                </section>
-                <section class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h2 class="text-base font-semibold text-slate-800">Create an account</h2>
-                    <p class="text-sm text-slate-600">Set your email and password now—Prism handles the rest.</p>
-                    <form method="post" action="{% url 'accounts:profile' %}" class="space-y-4">
-                        {% csrf_token %}
-                        {% include 'partials/components/form_field.html' with field_id='register_email' label='Email' required=True control_template='accounts/partials/email_control.html' %}
-                        {% include 'partials/components/form_field.html' with field_id='register_password' label='Password' required=True control_template='accounts/partials/password_control.html' %}
-                        {% include 'partials/components/button.html' with label='Create account' type='submit' %}
-                    </form>
-                </section>
-            </div>
-        {% endif %}
+
+            <form method="post" action="{% url 'accounts:profile' %}" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                {% csrf_token %}
+                <input type="hidden" name="form" value="password" />
+                {% if password_form.non_field_errors %}
+                    <p class="text-sm font-medium text-rose-600">{{ password_form.non_field_errors|join:' ' }}</p>
+                {% endif %}
+                {% with input_class='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200' %}
+                    {% for field in password_form %}
+                        <div class="space-y-2">
+                            <label for="{{ field.id_for_label }}" class="text-sm font-medium text-slate-700">
+                                {{ field.label }}{% if field.field.required %} <span class="text-rose-500">*</span>{% endif %}
+                            </label>
+                            <input type="password"
+                                   name="{{ field.html_name }}"
+                                   id="{{ field.id_for_label }}"
+                                   placeholder="••••••••"
+                                   class="{{ input_class }}"
+                                   {% if field.help_text %}aria-describedby="help-{{ field.id_for_label }}"{% endif %}
+                                   autocomplete="{% if field.name == 'old_password' %}current-password{% else %}new-password{% endif %}"
+                                   {% if field.field.required %}required{% endif %} />
+                            {% if field.help_text %}
+                                <p id="help-{{ field.id_for_label }}" class="text-xs text-slate-500">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% if field.errors %}
+                                <p class="text-xs font-medium text-rose-600">{{ field.errors|join:' ' }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+                <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Update password</button>
+            </form>
+        </div>
     </section>
 {% endblock %}

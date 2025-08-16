@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Sign in - Prism AI Agent{% endblock %}
+
+{% block content %}
+    {% url 'accounts:signup' as signup_url %}
+    <section class="mx-auto max-w-xl space-y-8">
+        <header class="space-y-2 text-center">
+            <h1 class="text-3xl font-semibold text-slate-900">Welcome back</h1>
+            <p class="text-sm text-slate-600">Sign in with your email to keep orchestrating new media runs</p>
+        </header>
+        <form method="post" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <p class="text-sm font-medium text-rose-600">{{ form.non_field_errors|join:' ' }}</p>
+            {% endif %}
+            {% with input_class='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200' %}
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="signin_email" class="text-sm font-medium text-slate-700">Email <span class="text-rose-500">*</span></label>
+                        <input type="email"
+                               name="{{ form.username.html_name }}"
+                               id="signin_email"
+                               value="{{ form.username.value|default_if_none:'' }}"
+                               placeholder="you@example.com"
+                               autocomplete="email"
+                               class="{{ input_class }}"
+                               required />
+                        {% if form.username.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.username.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label for="signin_password" class="text-sm font-medium text-slate-700">Password <span class="text-rose-500">*</span></label>
+                        <input type="password"
+                               name="{{ form.password.html_name }}"
+                               id="signin_password"
+                               placeholder="••••••••"
+                               autocomplete="current-password"
+                               class="{{ input_class }}"
+                               required />
+                        {% if form.password.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.password.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endwith %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% endif %}
+            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                <span>Sign in</span>
+            </button>
+        </form>
+        <p class="text-center text-sm text-slate-600">
+            Need an account?
+            <a href="{{ signup_url }}" class="font-medium text-blue-600 hover:text-blue-500">Create one now.</a>
+        </p>
+    </section>
+{% endblock %}

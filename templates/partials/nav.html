@@ -3,6 +3,9 @@
     {% url 'sources:ingest' as generate_url %}
     {% url 'assets:library' as assets_url %}
     {% url 'accounts:profile' as profile_url %}
+    {% url 'accounts:login' as login_url %}
+    {% url 'accounts:signup' as signup_url %}
+    {% url 'accounts:logout' as logout_url %}
     <nav class="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div class="mx-auto flex w-full max-w-5xl items-center gap-6 px-4 py-4">
             <a class="flex items-center gap-2 text-lg font-semibold text-slate-900" href="{{ home_url }}">
@@ -26,36 +29,48 @@
                                 <span>Home</span>
                             </a>
                         </li>
-                        <li>
-                            <a class="{{ base }} {% if current_namespace == 'sources' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
-                               href="{{ generate_url }}"
-                               aria-current="{% if current_namespace == 'sources' %}page{% else %}false{% endif %}">
-                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="cpu" class="h-3 w-3"></i></span>
-                                <span>Generate</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="{{ base }} {% if current_namespace == 'assets' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
-                               href="{{ assets_url }}"
-                               aria-current="{% if current_namespace == 'assets' %}page{% else %}false{% endif %}">
-                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="image" class="h-3 w-3"></i></span>
-                                <span>Assets</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="{{ base }} {% if current_namespace == 'accounts' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
-                               href="{{ profile_url }}"
-                               aria-current="{% if current_namespace == 'accounts' %}page{% else %}false{% endif %}">
-                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="user" class="h-3 w-3"></i></span>
-                                <span>Profile</span>
-                            </a>
-                        </li>
+                        {% if request.user.is_authenticated %}
+                            <li>
+                                <a class="{{ base }} {% if current_namespace == 'sources' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                                   href="{{ generate_url }}"
+                                   aria-current="{% if current_namespace == 'sources' %}page{% else %}false{% endif %}">
+                                    <span class="flex h-4 w-4 items-center justify-center"><i data-feather="cpu" class="h-3 w-3"></i></span>
+                                    <span>Generate</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ base }} {% if current_namespace == 'assets' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                                   href="{{ assets_url }}"
+                                   aria-current="{% if current_namespace == 'assets' %}page{% else %}false{% endif %}">
+                                    <span class="flex h-4 w-4 items-center justify-center"><i data-feather="image" class="h-3 w-3"></i></span>
+                                    <span>Assets</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ base }} {% if current_namespace == 'accounts' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                                   href="{{ profile_url }}"
+                                   aria-current="{% if current_namespace == 'accounts' %}page{% else %}false{% endif %}">
+                                    <span class="flex h-4 w-4 items-center justify-center"><i data-feather="user" class="h-3 w-3"></i></span>
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endwith %}
                 </ul>
             </div>
             <div class="flex items-center gap-3">
-                {% include 'partials/components/button.html' with label='Sign in' href=profile_url variant='ghost' size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="log-in" class="h-3 w-3"></i></span>' %}
-                {% include 'partials/components/button.html' with label='Create account' href=profile_url size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="user-plus" class="h-3 w-3"></i></span>' %}
+                {% if request.user.is_authenticated %}
+                    <form method="post" action="{{ logout_url }}" class="inline-flex">
+                        {% csrf_token %}
+                        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                            <span class="flex h-4 w-4 items-center justify-center"><i data-feather="log-out" class="h-3 w-3"></i></span>
+                            <span>Sign out</span>
+                        </button>
+                    </form>
+                {% else %}
+                    {% include 'partials/components/button.html' with label='Sign in' href=login_url variant='ghost' size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="log-in" class="h-3 w-3"></i></span>' %}
+                    {% include 'partials/components/button.html' with label='Create account' href=signup_url size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="user-plus" class="h-3 w-3"></i></span>' %}
+                {% endif %}
             </div>
         </div>
     </nav>

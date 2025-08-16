@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Create account - Prism AI Agent{% endblock %}
+
+{% block content %}
+    {% url 'accounts:login' as login_url %}
+    <section class="mx-auto max-w-xl space-y-8">
+        <header class="space-y-2 text-center">
+            <h1 class="text-3xl font-semibold text-slate-900">Create your Prism account</h1>
+            <p class="text-sm text-slate-600">One email unlocks orchestrated image, audio, and video generation</p>
+        </header>
+        <form method="post" class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <p class="text-sm font-medium text-rose-600">{{ form.non_field_errors|join:' ' }}</p>
+            {% endif %}
+            {% with input_class='w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200' %}
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="signup_email" class="text-sm font-medium text-slate-700">Email <span class="text-rose-500">*</span></label>
+                        <input type="email"
+                               name="{{ form.email.html_name }}"
+                               id="signup_email"
+                               value="{{ form.email.value|default_if_none:'' }}"
+                               placeholder="you@example.com"
+                               class="{{ input_class }}"
+                               autocomplete="email"
+                               required />
+                        {% if form.email.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.email.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="space-y-2">
+                            <label for="signup_first_name" class="text-sm font-medium text-slate-700">First name</label>
+                            <input type="text"
+                                   name="{{ form.first_name.html_name }}"
+                                   id="signup_first_name"
+                                   value="{{ form.first_name.value|default_if_none:'' }}"
+                                   placeholder="First name"
+                                   class="{{ input_class }}"
+                                   autocomplete="given-name" />
+                            {% if form.first_name.errors %}
+                                <p class="text-xs font-medium text-rose-600">{{ form.first_name.errors|join:' ' }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="signup_last_name" class="text-sm font-medium text-slate-700">Last name</label>
+                            <input type="text"
+                                   name="{{ form.last_name.html_name }}"
+                                   id="signup_last_name"
+                                   value="{{ form.last_name.value|default_if_none:'' }}"
+                                   placeholder="Last name"
+                                   class="{{ input_class }}"
+                                   autocomplete="family-name" />
+                            {% if form.last_name.errors %}
+                                <p class="text-xs font-medium text-rose-600">{{ form.last_name.errors|join:' ' }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="signup_company_name" class="text-sm font-medium text-slate-700">Company name</label>
+                        <input type="text"
+                               name="{{ form.company_name.html_name }}"
+                               id="signup_company_name"
+                               value="{{ form.company_name.value|default_if_none:'' }}"
+                               placeholder="Your company"
+                               class="{{ input_class }}"
+                               autocomplete="organization" />
+                        {% if form.company_name.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.company_name.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label for="signup_password1" class="text-sm font-medium text-slate-700">Password <span class="text-rose-500">*</span></label>
+                        <input type="password"
+                               name="{{ form.password1.html_name }}"
+                               id="signup_password1"
+                               placeholder="••••••••"
+                               class="{{ input_class }}"
+                               autocomplete="new-password"
+                               required />
+                        {% if form.password1.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.password1.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label for="signup_password2" class="text-sm font-medium text-slate-700">Confirm password <span class="text-rose-500">*</span></label>
+                        <input type="password"
+                               name="{{ form.password2.html_name }}"
+                               id="signup_password2"
+                               placeholder="••••••••"
+                               class="{{ input_class }}"
+                               autocomplete="new-password"
+                               required />
+                        {% if form.password2.errors %}
+                            <p class="text-xs font-medium text-rose-600">{{ form.password2.errors|join:' ' }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endwith %}
+            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                <span>Create account</span>
+            </button>
+        </form>
+        <p class="text-center text-sm text-slate-600">
+            Already have an account?
+            <a href="{{ login_url }}" class="font-medium text-blue-600 hover:text-blue-500">Sign in instead.</a>
+        </p>
+    </section>
+{% endblock %}
