@@ -1,0 +1,59 @@
+{% with assets_list=assets %}
+    <section class="space-y-6">
+        <header class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-semibold text-slate-900">
+                    {% if modality == 'image' %}Images{% elif modality == 'audio' %}Audio{% elif modality == 'video' %}Video{% else %}{{ modality|capfirst }}{% endif %}
+                </h2>
+                <p class="text-sm text-slate-600">
+                    {% if modality == 'image' %}Visual assets pulled from your sources.{% elif modality == 'audio' %}Voice and sound deliverables tied to each source.{% elif modality == 'video' %}Storyboard prompts and motion guides grouped by source.{% else %}Outputs generated for this format.{% endif %}
+                </p>
+            </div>
+            <span class="text-xs font-medium uppercase tracking-wide text-slate-400">{% if assets_list %}{{ assets_list|length }} item{% if assets_list|length != 1 %}s{% endif %}{% else %}0 items{% endif %}</span>
+        </header>
+        {% if assets_list %}
+            {% regroup assets_list by source_label as source_groups %}
+            {% for source in source_groups %}
+                <div class="space-y-3">
+                    {% with sample=source.list|first %}
+                        <h3 class="text-sm font-semibold text-slate-700">From: {% if source.grouper %}{{ source.grouper }}{% elif sample.source_label %}{{ sample.source_label }}{% elif sample.source and sample.source.title %}{{ sample.source.title }}{% elif sample.source and sample.source.url %}{{ sample.source.url }}{% else %}Untitled source{% endif %}</h3>
+                    {% endwith %}
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {% for asset in source.list %}
+                            <article class="flex h-full flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                                <header class="space-y-1">
+                                    <p class="text-sm font-semibold text-slate-800">{{ asset.title|default:'Untitled asset' }}</p>
+                                    <p class="text-xs text-slate-500">Created {{ asset.created_at|date:'M j, Y h:i A'|default:'recently' }}</p>
+                                </header>
+                                {% if asset.thumbnail_url and modality == 'image' %}
+                                    <div class="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                                        <img src="{{ asset.thumbnail_url }}" alt="Preview of {{ asset.title|default:'generated image' }}" class="h-40 w-full object-cover" />
+                                    </div>
+                                {% elif asset.waveform_url and modality == 'audio' %}
+                                    <div class="flex h-24 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+                                        Audio preview placeholder.
+                                    </div>
+                                {% elif asset.poster_url and modality == 'video' %}
+                                    <div class="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                                        <img src="{{ asset.poster_url }}" alt="Poster frame for {{ asset.title|default:'generated video' }}" class="h-40 w-full object-cover" />
+                                    </div>
+                                {% endif %}
+                                {% if asset.metadata %}
+                                    <p class="text-xs text-slate-500">{{ asset.metadata }}</p>
+                                {% endif %}
+                                <div class="mt-auto flex gap-3 text-xs font-medium">
+                                    <a href="{{ asset.download_url|default:'#' }}" class="text-blue-600 hover:text-blue-500">Download</a>
+                                    <a href="{{ asset.view_url|default:'#' }}" class="text-slate-600 hover:text-slate-800">View details</a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% with empty_href=generate_url|default:'#' %}
+                {% include 'partials/empty_state.html' with title='Nothing here yet' description='Generate assets in this format to see them listed by source.' action_label='Generate assets' action_href=empty_href action_variant='secondary' %}
+            {% endwith %}
+        {% endif %}
+    </section>
+{% endwith %}
