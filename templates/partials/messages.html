@@ -1,9 +1,17 @@
 {% if messages %}
-    <div class="space-y-2" hx-swap-oob="true">
+    <section class="space-y-2" hx-swap-oob="true" aria-live="polite" aria-atomic="true">
         {% for message in messages %}
-            <div class="rounded border border-slate-200 bg-white px-4 py-2 text-sm shadow-sm message-{{ message.tags }}">
-                {{ message }}
-            </div>
+            {% with level=message.tags|default:'info' %}
+                {% if 'error' in level %}
+                    {% include 'partials/_message_box.html' with role='alert' tone='border-rose-200 bg-rose-50 text-rose-700' icon='⚠️' message=message only %}
+                {% elif 'success' in level %}
+                    {% include 'partials/_message_box.html' with role='status' tone='border-emerald-200 bg-emerald-50 text-emerald-700' icon='✅' message=message only %}
+                {% elif 'warning' in level %}
+                    {% include 'partials/_message_box.html' with role='status' tone='border-amber-200 bg-amber-50 text-amber-700' icon='⚠️' message=message only %}
+                {% else %}
+                    {% include 'partials/_message_box.html' with role='status' tone='border-slate-200 bg-white text-slate-700' icon='ℹ️' message=message only %}
+                {% endif %}
+            {% endwith %}
         {% endfor %}
-    </div>
+    </section>
 {% endif %}

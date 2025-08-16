@@ -1,0 +1,7 @@
+{% with base='inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium' dot='h-1.5 w-1.5 rounded-full bg-current' %}
+    <span class="{{ base }} {{ classes }}">
+        <span class="sr-only">Status:</span>
+        <span class="{{ dot }} {{ dot_color }}"></span>
+        <span>{{ display }}</span>
+    </span>
+{% endwith %}

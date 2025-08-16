@@ -1,0 +1,25 @@
+{% comment %}
+Parameters:
+- field_id (required)
+- label (required)
+- description (optional helper text)
+- required (boolean)
+- errors (optional text or list)
+- control_template (template path rendered inside control area)
+{% endcomment %}
+<div class="space-y-2" id="field-{{ field_id }}">
+    <label for="{{ field_id }}" class="text-sm font-medium text-slate-700">
+        {{ label }}{% if required %} <span class="text-rose-500">*</span>{% endif %}
+    </label>
+    <div class="space-y-1">
+        {% if control_template %}
+            {% include control_template %}
+        {% endif %}
+        {% if description %}
+            <p class="text-xs text-slate-500">{{ description }}</p>
+        {% endif %}
+        {% if errors %}
+            <p class="text-xs font-medium text-rose-600">{{ errors }}</p>
+        {% endif %}
+    </div>
+</div>

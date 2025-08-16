@@ -1,11 +1,62 @@
-<nav class="border-b border-slate-200 bg-white/90 backdrop-blur">
-    <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
-        <a class="text-lg font-semibold" href="{% url 'ui:home' %}">Prism</a>
-        <ul class="flex items-center gap-4 text-sm font-medium">
-            <li><a class="hover:text-blue-600" href="{% url 'sources:ingest' %}">Sources</a></li>
-            <li><a class="hover:text-blue-600" href="{% url 'runs:list' %}">Runs</a></li>
-            <li><a class="hover:text-blue-600" href="{% url 'assets:library' %}">Assets</a></li>
-            <li><a class="hover:text-blue-600" href="{% url 'accounts:profile' %}">Account</a></li>
-        </ul>
-    </div>
-</nav>
+{% with current_namespace=request.resolver_match.namespace|default:'' current_url=request.resolver_match.url_name|default:'' %}
+    {% url 'ui:home' as home_url %}
+    {% url 'sources:ingest' as generate_url %}
+    {% url 'assets:library' as assets_url %}
+    {% url 'accounts:profile' as profile_url %}
+    <nav class="border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div class="mx-auto flex w-full max-w-5xl items-center gap-6 px-4 py-4">
+            <a class="flex items-center gap-2 text-lg font-semibold text-slate-900" href="{{ home_url }}">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-blue-500 via-cyan-400 to-purple-500 shadow-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round" class="h-5 w-5">
+                        <polygon points="12 3 3 9 12 15 21 9" fill="currentColor" opacity="0.85"></polygon>
+                        <polygon points="12 15 3 9 3 15 12 21" fill="currentColor" opacity="0.45"></polygon>
+                        <polygon points="12 15 21 9 21 15 12 21" fill="currentColor" opacity="0.65"></polygon>
+                    </svg>
+                </span>
+                <span>Prism</span>
+            </a>
+            <div class="flex flex-1 justify-center">
+                <ul class="flex items-center gap-4 text-sm font-medium">
+                    {% with base='inline-flex items-center gap-2 border-b-2 border-transparent px-1.5 py-1 transition hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' active_classes='border-blue-500 text-blue-600' inactive_classes='text-slate-600' %}
+                        <li>
+                            <a class="{{ base }} {% if current_namespace == 'ui' and current_url == 'home' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                               href="{{ home_url }}"
+                               aria-current="{% if current_namespace == 'ui' and current_url == 'home' %}page{% else %}false{% endif %}">
+                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="home" class="h-3 w-3"></i></span>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="{{ base }} {% if current_namespace == 'sources' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                               href="{{ generate_url }}"
+                               aria-current="{% if current_namespace == 'sources' %}page{% else %}false{% endif %}">
+                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="cpu" class="h-3 w-3"></i></span>
+                                <span>Generate</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="{{ base }} {% if current_namespace == 'assets' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                               href="{{ assets_url }}"
+                               aria-current="{% if current_namespace == 'assets' %}page{% else %}false{% endif %}">
+                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="image" class="h-3 w-3"></i></span>
+                                <span>Assets</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="{{ base }} {% if current_namespace == 'accounts' %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+                               href="{{ profile_url }}"
+                               aria-current="{% if current_namespace == 'accounts' %}page{% else %}false{% endif %}">
+                                <span class="flex h-4 w-4 items-center justify-center"><i data-feather="user" class="h-3 w-3"></i></span>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    {% endwith %}
+                </ul>
+            </div>
+            <div class="flex items-center gap-3">
+                {% include 'partials/components/button.html' with label='Sign in' href=profile_url variant='ghost' size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="log-in" class="h-3 w-3"></i></span>' %}
+                {% include 'partials/components/button.html' with label='Create account' href=profile_url size='sm' icon='<span class="flex h-4 w-4 items-center justify-center"><i data-feather="user-plus" class="h-3 w-3"></i></span>' %}
+            </div>
+        </div>
+    </nav>
+{% endwith %}

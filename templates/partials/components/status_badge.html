@@ -1,0 +1,20 @@
+{% comment %}
+Parameters:
+- status: machine value (pending, running, succeeded, failed, cancelled, queued)
+- label: optional readable text
+{% endcomment %}
+{% with value=status|default:'pending' display=label|default:status|default:'Pending' %}
+    {% if value == 'succeeded' or value == 'completed' %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-emerald-200 bg-emerald-50 text-emerald-700' dot_color='bg-emerald-500' display=display only %}
+    {% elif value == 'running' or value == 'in_progress' %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-blue-200 bg-blue-50 text-blue-700' dot_color='bg-blue-500' display=display only %}
+    {% elif value == 'failed' or value == 'error' %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-rose-200 bg-rose-50 text-rose-700' dot_color='bg-rose-500' display=display only %}
+    {% elif value == 'cancelled' or value == 'canceled' %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-slate-200 bg-slate-50 text-slate-600' dot_color='bg-slate-400' display=display only %}
+    {% elif value == 'queued' %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-amber-200 bg-amber-50 text-amber-700' dot_color='bg-amber-500' display=display only %}
+    {% else %}
+        {% include 'partials/components/_status_badge_markup.html' with classes='border-slate-200 bg-slate-50 text-slate-600' dot_color='bg-slate-400' display=display only %}
+    {% endif %}
+{% endwith %}

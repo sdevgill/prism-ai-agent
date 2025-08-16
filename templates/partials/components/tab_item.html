@@ -1,0 +1,26 @@
+{% comment %}
+Parameters:
+- tab_id (required for aria-controls)
+- label (required)
+- href (optional, defaults to '#')
+- is_active (boolean)
+- hx_get / hx_target / hx_swap (optional)
+{% endcomment %}
+{% with active=is_active|default:False %}
+    {% with base='inline-flex items-center border-b-2 border-transparent px-3 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' %}
+        {% with inactive_classes='text-slate-500 hover:text-slate-700 hover:border-slate-300' active_classes='border-blue-500 text-blue-600' %}
+            <a id="{{ tab_id }}-tab"
+               href="{{ href|default:'#' }}"
+               class="{{ base }} {% if active %}{{ active_classes }}{% else %}{{ inactive_classes }}{% endif %}"
+               role="tab"
+               aria-controls="{{ tab_id }}"
+               aria-selected="{% if active %}true{% else %}false{% endif %}"
+               {% if hx_get %}hx-get="{{ hx_get }}"{% endif %}
+               {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
+               {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}
+            >
+                <span>{{ label }}</span>
+            </a>
+        {% endwith %}
+    {% endwith %}
+{% endwith %}

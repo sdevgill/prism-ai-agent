@@ -1,0 +1,23 @@
+{% comment %}
+Parameters:
+- table_head: template path for thead rows
+- table_body: template path for tbody rows
+- caption (optional)
+{% endcomment %}
+<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+            {% if caption %}<caption class="px-4 py-3 text-left text-sm font-semibold text-slate-600">{{ caption }}</caption>{% endif %}
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {% if table_head %}
+                    {% include table_head %}
+                {% endif %}
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                {% if table_body %}
+                    {% include table_body %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

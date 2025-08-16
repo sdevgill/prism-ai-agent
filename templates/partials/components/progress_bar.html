@@ -1,0 +1,13 @@
+{% comment %}
+Parameters:
+- percent: number 0-100 (defaults to 0)
+- label: accessible text describing progress
+{% endcomment %}
+{% with pct=percent|default:0 %}
+    <div class="space-y-1">
+        <div class="relative h-2 w-full overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ label|default:'Progress' }}">
+            <div class="h-full bg-blue-500 transition-all" style="width: {{ pct }}%;"></div>
+        </div>
+        <p class="text-xs font-medium text-slate-500">{{ pct }}% complete</p>
+    </div>
+{% endwith %}

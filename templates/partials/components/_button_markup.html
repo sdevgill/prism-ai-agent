@@ -1,0 +1,15 @@
+{% with classes=base_classes|add:' '|add:size_classes|add:' '|add:variant_classes %}
+    {% if href %}
+        <a href="{{ href }}" class="{{ classes }}" role="button">
+    {% else %}
+        <button type="{{ btn_type }}" class="{{ classes }}">
+    {% endif %}
+    {% if icon and icon_position == 'leading' %}<span aria-hidden="true">{{ icon|safe }}</span>{% endif %}
+    <span>{{ label }}</span>
+    {% if icon and icon_position == 'trailing' %}<span aria-hidden="true">{{ icon|safe }}</span>{% endif %}
+    {% if href %}
+        </a>
+    {% else %}
+        </button>
+    {% endif %}
+{% endwith %}
