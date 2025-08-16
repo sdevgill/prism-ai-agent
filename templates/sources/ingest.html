@@ -1,15 +1,93 @@
 {% extends "base.html" %}
 
-{% block title %}Source Ingestion · Prism AI Agent{% endblock %}
+{% block title %}Generate Assets · Prism AI Agent{% endblock %}
 
 {% block content %}
-    <section class="space-y-4">
-        <header>
-            <h1 class="text-2xl font-semibold text-slate-900">Capture a source</h1>
-            <p class="text-sm text-slate-600">Drop in a URL or paste raw text so Prism can extract the canonical narrative before it branches out.</p>
+    <section class="space-y-8">
+        <header class="space-y-2">
+            <h1 class="text-3xl font-semibold text-slate-900">Generate new assets</h1>
+            <p class="text-sm text-slate-600">Share a webpage or paste raw copy. Prism cleans it up, then builds images, narration, and video guides that stay true to the source.</p>
         </header>
-        <div class="rounded border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-            The ingestion form will live here. For now, this placeholder marks where request parsing, cleaning, and deduplication logic will plug in.
-        </div>
+
+        <form method="post" action="{% url 'sources:ingest' %}" class="space-y-10" hx-post="{% url 'sources:ingest' %}" hx-target="#generate-status" hx-swap="innerHTML">
+            {% csrf_token %}
+            <fieldset class="space-y-4">
+                <legend class="text-sm font-semibold text-slate-700">How are you feeding the content?</legend>
+                <div class="flex flex-wrap gap-4 text-sm text-slate-600">
+                    <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
+                        <input type="radio" name="input_mode" value="url" class="size-4 text-blue-600 focus:ring-blue-500" checked />
+                        Website URL
+                    </label>
+                    <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
+                        <input type="radio" name="input_mode" value="text" class="size-4 text-blue-600 focus:ring-blue-500" />
+                        Pasted text
+                    </label>
+                </div>
+            </fieldset>
+
+            <div class="grid gap-8 lg:grid-cols-2">
+                <div class="space-y-6">
+                    {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' required=True control_template='sources/partials/url_control.html' %}
+                    {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
+                </div>
+                <div class="space-y-6">
+                    <fieldset class="space-y-3">
+                        <legend class="text-sm font-semibold text-slate-700">What should Prism generate?</legend>
+                        <p class="text-xs text-slate-500">Pick one or more outputs. You can always rerun from the same source with different formats.</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="image" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="image" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(3 renders)</span></span>
+                                    <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
+                                </span>
+                            </label>
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="headphones" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
+                                    <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
+                                </span>
+                            </label>
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="film" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
+                                    <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+                    <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                        <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
+                        <ul class="mt-2 space-y-1 text-xs text-blue-700">
+                            <li>• Prism shows progress live once the backend hooks in.</li>
+                            <li>• You’ll find every output in the Assets page grouped by source.</li>
+                            <li>• Need to iterate? Re-run with the same link and different formats.</li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                {% include 'partials/components/button.html' with label='Generate assets' type='submit' %}
+                {% include 'partials/components/button.html' with label='Clear fields' type='reset' variant='ghost' %}
+            </div>
+        </form>
+
+        <section id="generate-status" class="space-y-4" aria-live="polite">
+            <div class="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-500">
+                Live status updates will appear here once HTMX endpoints are wired up.
+            </div>
+        </section>
     </section>
 {% endblock %}
