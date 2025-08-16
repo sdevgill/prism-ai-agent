@@ -1,0 +1,8 @@
+<div class="space-y-4">
+    <p class="text-sm text-slate-600">Each orchestration step reports status, retries, and runtime. HTMX can poll this fragment for live updates.</p>
+    {% if steps %}
+        {% include 'partials/components/table_shell.html' with table_head='runs/partials/steps_head.html' table_body='runs/partials/steps_rows.html' caption='Run steps' %}
+    {% else %}
+        {% include 'partials/empty_state.html' with title='No steps yet' description='Steps populate once the orchestrator begins executing this run.' icon='🛠️' %}
+    {% endif %}
+</div>

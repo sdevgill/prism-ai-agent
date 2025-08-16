@@ -1,0 +1,28 @@
+{% for step in steps %}
+    <tr class="hover:bg-slate-50">
+        <td class="px-4 py-3 text-sm font-medium text-slate-800">{{ step.kind|capfirst }}</td>
+        <td class="px-4 py-3">
+            {% with label=step.get_status_display|default:step.status|default:'Pending' %}
+                {% include 'partials/components/status_badge.html' with status=step.status label=label %}
+            {% endwith %}
+        </td>
+        <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+            {% if step.started_at %}{{ step.started_at|date:'M j, Y h:i A' }}{% else %}<span class="text-xs text-slate-400">—</span>{% endif %}
+        </td>
+        <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+            {% if step.finished_at %}{{ step.finished_at|date:'M j, Y h:i A' }}{% else %}<span class="text-xs text-slate-400">—</span>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-center text-sm text-slate-600">{{ step.retries|default:'0' }}</td>
+        <td class="px-4 py-3 text-sm text-slate-600">
+            {% if step.error %}
+                <span class="text-rose-600">{{ step.error }}</span>
+            {% else %}
+                <span class="text-slate-500">—</span>
+            {% endif %}
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">Steps will appear once the run starts.</td>
+    </tr>
+{% endfor %}

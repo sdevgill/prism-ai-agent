@@ -1,0 +1,11 @@
+<div class="space-y-4">
+    <p class="text-sm text-slate-600">Streamed logs display here. Wire an HTMX polling endpoint to push incremental updates without a full page reload.</p>
+    {% if logs %}
+        <div class="rounded-lg border border-slate-200 bg-slate-900 text-xs text-slate-100 shadow-inner">
+            <pre class="max-h-80 overflow-y-auto p-4">{% for entry in logs %}[{{ entry.timestamp|date:'H:i:s'|default:'--:--:--' }}] {{ entry.level|upper }} · {{ entry.message }}{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+        </div>
+    {% else %}
+        {% include 'partials/empty_state.html' with title='Logs pending' description='Runtime logs will appear as soon as the orchestrator begins streaming events.' icon='📜' %}
+    {% endif %}
+</div>

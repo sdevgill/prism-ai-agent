@@ -3,13 +3,50 @@
 {% block title %}Runs · Prism AI Agent{% endblock %}
 
 {% block content %}
-    <section class="space-y-4">
-        <header>
-            <h1 class="text-2xl font-semibold text-slate-900">Pipeline runs</h1>
-            <p class="text-sm text-slate-600">Track every orchestration run, its steps, and downstream tasks from this control panel.</p>
+    <section class="space-y-8">
+        <header class="flex flex-wrap items-center justify-between gap-4">
+            <div class="space-y-2">
+                <h1 class="text-2xl font-semibold text-slate-900">Pipeline runs</h1>
+                <p class="text-sm text-slate-600">Monitor orchestration progress, inspect errors, and jump into run detail views.</p>
+            </div>
+            {% url 'sources:ingest' as ingest_url %}
+            {% include 'partials/components/button.html' with label='New run' href=ingest_url %}
         </header>
-        <div class="rounded border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
-            Once the state machine lands, this view will list recent runs with HTMX-powered polling for live updates.
-        </div>
+
+        <form method="get" class="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3" hx-get="{% url 'runs:list' %}" hx-target="#run-results" hx-swap="innerHTML">
+            <div class="md:col-span-2">
+                <label for="run-search" class="block text-xs font-semibold uppercase tracking-wide text-slate-500">Search</label>
+                <div class="mt-1 flex items-center gap-2">
+                    <input id="run-search" name="q" type="search" placeholder="Search by run ID, source title, or error snippet" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                    {% include 'partials/components/button.html' with label='Filter' type='submit' variant='secondary' size='sm' %}
+                </div>
+            </div>
+            <div>
+                <label for="status-filter" class="block text-xs font-semibold uppercase tracking-wide text-slate-500">Status</label>
+                <select id="status-filter" name="status" class="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                    <option value="">All statuses</option>
+                    <option value="queued">Queued</option>
+                    <option value="running">Running</option>
+                    <option value="succeeded">Succeeded</option>
+                    <option value="failed">Failed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </form>
+
+        <section id="run-results" class="space-y-4" aria-live="polite">
+            {% if runs %}
+                {% include 'partials/components/table_shell.html' with table_head='runs/partials/list_head.html' table_body='runs/partials/list_rows.html' caption='Runs overview' %}
+                <nav class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+                    <span>{% if page_obj %}Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}{% else %}Ready for pagination{% endif %}</span>
+                    <div class="flex gap-2">
+                        {% include 'partials/components/button.html' with label='Previous' variant='ghost' size='sm' href='#' %}
+                        {% include 'partials/components/button.html' with label='Next' variant='ghost' size='sm' href='#' %}
+                    </div>
+                </nav>
+            {% else %}
+                {% include 'partials/empty_state.html' with title='No runs tracked yet' description='Launch a run to coordinate extraction, prompt building, and asset generation. Runs will populate here instantly.' action_label='Ingest a source' action_href=ingest_url %}
+            {% endif %}
+        </section>
     </section>
 {% endblock %}

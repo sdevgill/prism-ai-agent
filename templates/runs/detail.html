@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Run #{{ run.id }} · Prism AI Agent{% endblock %}
+
+{% block content %}
+    <section class="space-y-8">
+        <header class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Run</p>
+                    <h1 class="text-2xl font-semibold text-slate-900">Run #{{ run.id }}</h1>
+                </div>
+                {% with label=run.get_status_display|default:run.status|default:'Pending' %}
+                    {% include 'partials/components/status_badge.html' with status=run.status label=label %}
+                {% endwith %}
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                {% if run.source and run.source.url %}
+                    <span class="truncate">Source: <a href="{{ run.source.url }}" class="text-blue-600 hover:text-blue-500" target="_blank" rel="noopener">{{ run.source.title|default:run.source.url }}</a></span>
+                {% elif run.source and run.source.title %}
+                    <span>Source: {{ run.source.title }}</span>
+                {% endif %}
+                <span>Started {{ run.started_at|date:'M j, Y h:i A'|default:'—' }}</span>
+                <span>Finished {{ run.finished_at|date:'M j, Y h:i A'|default:'—' }}</span>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <form method="post" hx-post="{{ request.path }}" action="{{ request.path }}" hx-target="closest section" hx-swap="none" class="inline-flex">
+                    {% csrf_token %}
+                    {% include 'partials/components/button.html' with label='Cancel run' type='submit' variant='ghost' %}
+                </form>
+                <form method="post" hx-post="{{ request.path }}" action="{{ request.path }}" hx-target="closest section" hx-swap="none" class="inline-flex">
+                    {% csrf_token %}
+                    {% include 'partials/components/button.html' with label='Retry failed step' type='submit' variant='secondary' %}
+                </form>
+            </div>
+        </header>
+
+        <section class="grid gap-6 lg:grid-cols-[minmax(0,2fr),minmax(0,1fr)]">
+            <div class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Progress</h2>
+                {% include 'partials/components/progress_bar.html' with percent=run.progress|default:0 label='Run progress' %}
+                <dl class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Status</dt>
+                        <dd class="text-sm text-slate-700">{{ run.get_status_display|default:run.status|default:'Pending' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Error</dt>
+                        <dd class="text-sm text-slate-700">{% if run.error_message %}<span class="text-rose-600">{{ run.error_message }}</span>{% else %}—{% endif %}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Started</dt>
+                        <dd class="text-sm text-slate-700">{% if run.started_at %}{{ run.started_at|date:'M j, Y h:i A' }}{% else %}Queued{% endif %}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Finished</dt>
+                        <dd class="text-sm text-slate-700">{% if run.finished_at %}{{ run.finished_at|date:'M j, Y h:i A' }}{% else %}In progress{% endif %}</dd>
+                    </div>
+                </dl>
+            </div>
+            <aside class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Selected modalities</h2>
+                {% with run_params=run.params %}
+                    {% with modalities=run_params.modalities|default:run.modalities %}
+                        {% if modalities %}
+                            <ul class="space-y-2">
+                                {% for modality in modalities %}
+                                    <li class="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm">
+                                        <span class="font-medium text-slate-800">{{ modality|capfirst }}</span>
+                                        <span class="text-xs text-slate-500">Awaiting updates</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-sm text-slate-500">Modalities will appear once the run parameters are persisted.</p>
+                        {% endif %}
+                    {% endwith %}
+                {% endwith %}
+                <div class="space-y-2 text-xs text-slate-500">
+                    <p>HTMX polling hooks will refresh this panel and the tabs below once the backend exposes fragment endpoints.</p>
+                    <p class="italic">Last refresh placeholder: <span>{% now 'M j, Y h:i A' %}</span></p>
+                </div>
+            </aside>
+        </section>
+
+        <section class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="text-xl font-semibold text-slate-900">Run activity</h2>
+                <div class="flex gap-2 text-xs text-slate-500">
+                    <span>HTMX target: <code class="rounded bg-slate-100 px-1.5 py-0.5">#run-tab-content</code></span>
+                    <span>Swap mode: <code class="rounded bg-slate-100 px-1.5 py-0.5">innerHTML</code></span>
+                </div>
+            </div>
+            <div class="border-b border-slate-200" role="tablist" aria-label="Run detail tabs">
+                <div class="flex flex-wrap gap-3">
+                    {% include 'partials/components/tab_item.html' with tab_id='run-summary-panel' label='Summary' href='#run-summary-panel' is_active=True %}
+                    {% include 'partials/components/tab_item.html' with tab_id='run-steps-panel' label='Steps' href='#run-steps-panel' %}
+                    {% include 'partials/components/tab_item.html' with tab_id='run-logs-panel' label='Logs' href='#run-logs-panel' %}
+                    {% include 'partials/components/tab_item.html' with tab_id='run-assets-panel' label='Assets' href='#run-assets-panel' %}
+                </div>
+            </div>
+            <div id="run-tab-content" class="space-y-6" data-run-id="{{ run.id }}">
+                <div id="run-summary-panel" role="tabpanel" aria-labelledby="run-summary-panel-tab" class="space-y-4">
+                    {% include 'runs/fragments/summary.html' %}
+                </div>
+                <div id="run-steps-panel" role="tabpanel" aria-labelledby="run-steps-panel-tab" hidden class="space-y-4">
+                    {% include 'runs/fragments/steps.html' %}
+                </div>
+                <div id="run-logs-panel" role="tabpanel" aria-labelledby="run-logs-panel-tab" hidden class="space-y-4">
+                    {% include 'runs/fragments/logs.html' %}
+                </div>
+                <div id="run-assets-panel" role="tabpanel" aria-labelledby="run-assets-panel-tab" hidden class="space-y-4">
+                    {% include 'runs/fragments/assets.html' %}
+                </div>
+            </div>
+        </section>
+    </section>
+{% endblock %}
