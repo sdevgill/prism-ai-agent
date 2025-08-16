@@ -1,0 +1,43 @@
+{% for run in recent_runs %}
+    <tr class="hover:bg-slate-50">
+        <td class="whitespace-nowrap px-4 py-3">
+            {% url 'runs:detail' run.id as detail_url %}
+            <a href="{{ detail_url }}" class="font-semibold text-blue-600 hover:text-blue-500">Run #{{ run.id }}</a>
+            {% if run.source and run.source.title %}
+                <p class="text-xs text-slate-500">{{ run.source.title }}</p>
+            {% elif run.source and run.source.url %}
+                <p class="text-xs text-slate-500 truncate">{{ run.source.url }}</p>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3">
+            {% with label=run.get_status_display|default:run.status|default:'Pending' %}
+                {% include 'partials/components/status_badge.html' with status=run.status label=label %}
+            {% endwith %}
+        </td>
+        <td class="px-4 py-3">
+            {% with run_params=run.params %}
+                {% with modalities=run_params.modalities|default:run.modalities %}
+                    {% if modalities %}
+                        <div class="flex flex-wrap gap-2">
+                            {% for modality in modalities %}
+                                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ modality|capfirst }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-xs text-slate-400">Not set</span>
+                    {% endif %}
+                {% endwith %}
+            {% endwith %}
+        </td>
+        <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+            {% if run.started_at %}{{ run.started_at|date:'M j, Y h:i A' }}{% else %}<span class="text-xs text-slate-400">Pending</span>{% endif %}
+        </td>
+        <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+            {% if run.finished_at %}{{ run.finished_at|date:'M j, Y h:i A' }}{% else %}<span class="text-xs text-slate-400">—</span>{% endif %}
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500">Runs will appear here once launched.</td>
+    </tr>
+{% endfor %}

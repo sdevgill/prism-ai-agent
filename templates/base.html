@@ -9,15 +9,25 @@
         {% tailwind_css %}
         {% block extra_head %}{% endblock %}
     </head>
-    <body class="min-h-screen bg-slate-50 text-slate-900" hx-target="#content" hx-swap="innerHTML" hx-ext="class-tools">
+    <body class="flex min-h-screen flex-col text-slate-900 {% block body_class %}bg-slate-50{% endblock %}" hx-target="#content" hx-swap="innerHTML" hx-ext="class-tools">
         {% include 'partials/nav.html' %}
-        <main id="content" class="mx-auto w-full max-w-5xl px-4 py-8">
+        <main id="content" role="main" tabindex="-1" class="mx-auto w-full max-w-5xl flex-1 px-4 py-8 focus:outline-none">
             {% include 'partials/messages.html' %}
             {% block content %}{% endblock %}
         </main>
         {% include 'partials/footer.html' %}
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-hJKeGhf8AmgsaB4N5Hs2sgWfHoAaoMo4jc+3hV+iRk6w2ZwA58Ua5SzYg1V3oyM4" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script>
+        <script src="https://unpkg.com/feather-icons@4.29.0/dist/feather.min.js" crossorigin="anonymous"></script>
+        <script>
+            function refreshFeatherIcons() {
+                if (window.feather && typeof window.feather.replace === 'function') {
+                    window.feather.replace({ width: 20, height: 20, 'stroke-width': 1.8 });
+                }
+            }
+            document.addEventListener('DOMContentLoaded', refreshFeatherIcons);
+            document.addEventListener('htmx:afterSwap', refreshFeatherIcons);
+        </script>
         {% block extra_scripts %}{% endblock %}
     </body>
 </html>
