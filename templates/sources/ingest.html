@@ -11,6 +11,7 @@
 
         <form method="post" action="{% url 'sources:ingest' %}" class="space-y-10" hx-post="{% url 'sources:ingest' %}" hx-target="#generate-status" hx-swap="innerHTML">
             {% csrf_token %}
+            {% include 'partials/components/form_field.html' with field_id='run_title' label='Give this run a title' description='Use something descriptive so you can find these assets later.' required=True control_template='sources/partials/title_control.html' %}
             <fieldset class="space-y-4">
                 <legend class="text-sm font-semibold text-slate-700">How are you feeding the content?</legend>
                 <div class="flex flex-wrap gap-4 text-sm text-slate-600">
@@ -27,8 +28,12 @@
 
             <div class="grid gap-8 lg:grid-cols-2">
                 <div class="space-y-6">
-                    {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' required=True control_template='sources/partials/url_control.html' %}
-                    {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
+                    <div data-input-field="url">
+                        {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' control_template='sources/partials/url_control.html' %}
+                    </div>
+                    <div data-input-field="text">
+                        {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
+                    </div>
                 </div>
                 <div class="space-y-6">
                     <fieldset class="space-y-3">
@@ -90,4 +95,44 @@
             </div>
         </section>
     </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    {{ block.super }}
+    <script>
+        (function () {
+            const modeInputs = document.querySelectorAll('input[name="input_mode"]');
+            const urlField = document.getElementById('source_url');
+            const textField = document.getElementById('source_text');
+            const urlWrapper = document.querySelector('[data-input-field="url"]');
+            const textWrapper = document.querySelector('[data-input-field="text"]');
+
+            if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper) {
+                return;
+            }
+
+            const toggleFields = () => {
+                const selected = document.querySelector('input[name="input_mode"]:checked');
+                const mode = selected ? selected.value : 'url';
+
+                if (mode === 'text') {
+                    urlWrapper.classList.add('hidden');
+                    textWrapper.classList.remove('hidden');
+                    urlField.removeAttribute('required');
+                    textField.setAttribute('required', 'required');
+                } else {
+                    textWrapper.classList.add('hidden');
+                    urlWrapper.classList.remove('hidden');
+                    textField.removeAttribute('required');
+                    urlField.setAttribute('required', 'required');
+                }
+            };
+
+            modeInputs.forEach((input) => {
+                input.addEventListener('change', toggleFields);
+            });
+
+            toggleFields();
+        })();
+    </script>
 {% endblock %}
