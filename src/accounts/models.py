@@ -10,6 +10,12 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_("email address"), unique=True)
+    company_name = models.CharField(
+        _("company name"),
+        max_length=255,
+        blank=True,
+        help_text=_("Optional organization name associated with the account."),
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
