@@ -161,6 +161,10 @@ REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 
+# OpenAI --------------------------------------------------------------------
+OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+OPENAI_RESPONSES_MODEL = env("OPENAI_RESPONSES_MODEL", default="gpt-5")
+
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
