@@ -16,6 +16,7 @@ dependencies = [
     "whitenoise",
     "django-browser-reload",
     "django-tailwind-cli",
+    "openai",
 ]
 
 [project.optional-dependencies]
