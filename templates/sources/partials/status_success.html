@@ -1,0 +1,5 @@
+<div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-4 text-sm text-blue-800 shadow-sm">
+    <p class="font-semibold">Run "{{ run.title }}" is queued.</p>
+    <p class="mt-1">We'll generate prompts for {% for modality in modalities %}{% if not forloop.first %}, {% endif %}{{ modality|title }}{% endfor %} and surface results on the Assets page.</p>
+    <p class="mt-2 text-xs text-blue-700">Queued at {{ timestamp|date:"M j, Y H:i" }}.</p>
+</div>

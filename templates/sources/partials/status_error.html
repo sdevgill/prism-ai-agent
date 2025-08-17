@@ -1,0 +1,10 @@
+<div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-700 shadow-sm">
+    <p class="font-semibold">We couldn't queue that run yet.</p>
+    <ul class="mt-2 space-y-1">
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                <li>• {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>

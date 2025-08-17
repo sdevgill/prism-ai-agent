@@ -31,7 +31,7 @@
                     <div data-input-field="url">
                         {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' control_template='sources/partials/url_control.html' %}
                     </div>
-                    <div data-input-field="text">
+                    <div data-input-field="text" class="hidden">
                         {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
                     </div>
                 </div>
