@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 
 from src.runs.models import PromptKind
 
+SOURCE_TEXT_MAX_LENGTH = 50_000
+
 
 class RunRequestForm(forms.Form):
     """Collect the minimal data required to queue a new run."""
@@ -19,7 +21,9 @@ class RunRequestForm(forms.Form):
     run_title = forms.CharField(max_length=160)
     input_mode = forms.ChoiceField(choices=INPUT_CHOICES)
     source_url = forms.CharField(required=False)
-    source_text = forms.CharField(widget=forms.Textarea, required=False)
+    source_text = forms.CharField(
+        max_length=SOURCE_TEXT_MAX_LENGTH, widget=forms.Textarea, required=False
+    )
     modalities = forms.MultipleChoiceField(
         choices=PromptKind.choices,
         widget=forms.CheckboxSelectMultiple,

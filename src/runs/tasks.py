@@ -22,6 +22,7 @@ from src.runs.models import (
     StepKind,
     StepStatus,
 )
+from src.runs.tokenization import PROMPT_TOKEN_LIMIT, truncate_to_limit
 
 logger = logging.getLogger(__name__)
 
@@ -118,15 +119,14 @@ def generate_prompts_for_run(
             }
         )
     if source_text:
-        truncated = source_text.strip()
-        if len(truncated) > 6000:
-            truncated = f"{truncated[:6000]}\n[truncated]"
-        user_blocks.append(
-            {
-                "type": "input_text",
-                "text": f"Direct source text (may be truncated):\n{truncated}",
-            }
-        )
+        truncated = truncate_to_limit(source_text, PROMPT_TOKEN_LIMIT)
+        if truncated:
+            user_blocks.append(
+                {
+                    "type": "input_text",
+                    "text": f"Direct source text (may be truncated):\n{truncated}",
+                }
+            )
 
     request_kwargs: dict[str, Any] = {}
     if submitted_url:

@@ -1,1 +1,5 @@
-<textarea name="source_text" id="{{ field_id }}" rows="6" placeholder="Paste the raw narrative or script..." class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+<textarea name="source_text" id="{{ field_id }}" rows="6" maxlength="{{ max_source_text_chars }}" data-char-limit="{{ max_source_text_chars }}" data-token-limit="{{ prompt_token_limit }}" placeholder="Paste the raw narrative or script..." class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+<div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+    <span data-char-count>0/{{ max_source_text_chars_display }} characters</span>
+    <span data-token-count>0/{{ prompt_token_limit_display }} tokens</span>
+</div>

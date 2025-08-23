@@ -1,16 +1,18 @@
 """Views for source intake and orchestration kickoff."""
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from src.runs.models import PromptKind, Run, RunStatus, Step, StepKind, StepStatus
 from src.runs.tasks import generate_prompts_for_run
-from src.sources.forms import RunRequestForm
+from src.runs.tokenization import PROMPT_TOKEN_LIMIT, count_tokens
+from src.sources.forms import SOURCE_TEXT_MAX_LENGTH, RunRequestForm
 
 
 class SourceIngestView(LoginRequiredMixin, FormView):
@@ -34,6 +36,10 @@ class SourceIngestView(LoginRequiredMixin, FormView):
                 context["status_url"] = ""
             else:
                 context["status_url"] = reverse("sources:run-status", args=[run.id])
+        context.setdefault("prompt_token_limit", PROMPT_TOKEN_LIMIT)
+        context.setdefault("prompt_token_limit_display", f"{PROMPT_TOKEN_LIMIT:,}")
+        context.setdefault("max_source_text_chars", SOURCE_TEXT_MAX_LENGTH)
+        context.setdefault("max_source_text_chars_display", f"{SOURCE_TEXT_MAX_LENGTH:,}")
         return context
 
     def form_valid(self, form):
@@ -180,3 +186,23 @@ class RunStatusFragmentView(LoginRequiredMixin, TemplateView):
             return "Assets generation in progress...."
 
         return "Assets generation in progress...."
+
+
+class TokenEstimateView(LoginRequiredMixin, View):
+    """
+    Return the token count for arbitrary pasted text.
+    """
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        """Compute and respond with the model-aware token count."""
+
+        text = request.POST.get("text", "")
+        tokens = count_tokens(text)
+        return JsonResponse(
+            {
+                "tokens": tokens,
+                "limit": PROMPT_TOKEN_LIMIT,
+            }
+        )

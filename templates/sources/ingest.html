@@ -44,7 +44,7 @@
                         {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' control_template='sources/partials/url_control.html' %}
                     </div>
                     <div data-input-field="text" class="hidden">
-                        {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
+                        {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes (up to '|add:max_source_text_chars_display|add:' characters). Prism trims to roughly '|add:prompt_token_limit_display|add:' tokens before sending to the model.' control_template='sources/partials/text_control.html' %}
                     </div>
                 </div>
             </section>
@@ -167,14 +167,93 @@
             const textField = document.getElementById('source_text');
             const urlWrapper = document.querySelector('[data-input-field="url"]');
             const textWrapper = document.querySelector('[data-input-field="text"]');
+            const charCounter = document.querySelector('[data-char-count]');
+            const tokenCounter = document.querySelector('[data-token-count]');
             const imageToggle = document.querySelector('[data-modality-toggle="image"]');
             const imageOptions = document.querySelector('[data-modality-options="image"]');
             const statusUrl = '{{ status_url|default:""|escapejs }}';
             const statusContainer = document.getElementById('generate-status');
+            const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            const tokenEndpoint = '{% url "sources:token-estimate" %}';
 
-            if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper) {
+            if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper || !charCounter || !tokenCounter) {
                 return;
             }
+
+            const charLimit = Number(textField.dataset.charLimit || {{ max_source_text_chars }});
+            const tokenLimit = Number(textField.dataset.tokenLimit || {{ prompt_token_limit }});
+            const formatNumber = (value) => new Intl.NumberFormat().format(value);
+            let tokenTimeoutId;
+            let tokenAbortController;
+
+            const updateTokenDisplay = (tokens) => {
+                tokenCounter.textContent = `${formatNumber(tokens)}/${formatNumber(tokenLimit)} tokens`;
+                const tokenOverLimit = tokens > tokenLimit;
+                tokenCounter.classList.toggle('text-rose-600', tokenOverLimit);
+                tokenCounter.classList.toggle('text-slate-500', !tokenOverLimit);
+            };
+
+            const requestTokenCount = (value) => {
+                if (!tokenEndpoint) {
+                    return;
+                }
+
+                if (tokenAbortController) {
+                    tokenAbortController.abort();
+                }
+
+                tokenAbortController = new AbortController();
+
+                fetch(tokenEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-CSRFToken': csrfInput ? csrfInput.value : '',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: new URLSearchParams({ text: value }).toString(),
+                    credentials: 'same-origin',
+                    signal: tokenAbortController.signal,
+                })
+                    .then((response) => (response.ok ? response.json() : Promise.reject()))
+                    .then((data) => {
+                        if (typeof data.tokens === 'number') {
+                            updateTokenDisplay(data.tokens);
+                        }
+                    })
+                    .catch(() => {
+                        // Swallow errors; next input event will retry.
+                    });
+            };
+
+            const scheduleTokenRequest = (value) => {
+                if (tokenTimeoutId) {
+                    window.clearTimeout(tokenTimeoutId);
+                }
+                if (!value.trim()) {
+                    if (tokenAbortController) {
+                        tokenAbortController.abort();
+                    }
+                    updateTokenDisplay(0);
+                    return;
+                }
+
+                tokenTimeoutId = window.setTimeout(() => requestTokenCount(value), 200);
+            };
+
+            const updateCounts = () => {
+                const value = textField.value || '';
+                const charCount = value.length;
+
+                charCounter.textContent = `${formatNumber(charCount)}/${formatNumber(charLimit)} characters`;
+
+                const charOverLimit = charCount > charLimit;
+
+                charCounter.classList.toggle('text-rose-600', charOverLimit);
+                charCounter.classList.toggle('text-slate-500', !charOverLimit);
+
+                scheduleTokenRequest(value);
+            };
 
             const toggleFields = () => {
                 const selected = document.querySelector('input[name="input_mode"]:checked');
@@ -191,11 +270,15 @@
                     textField.removeAttribute('required');
                     urlField.setAttribute('required', 'required');
                 }
+
+                updateCounts();
             };
 
             modeInputs.forEach((input) => {
                 input.addEventListener('change', toggleFields);
             });
+
+            textField.addEventListener('input', updateCounts);
 
             toggleFields();
 
