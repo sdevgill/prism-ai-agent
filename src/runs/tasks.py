@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
-from typing import Any, Dict, Iterable, Set
+from typing import Any, Iterable
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -48,7 +48,7 @@ def generate_prompts_for_run(
     submitted_url: str | None = None,
     source_text: str | None = None,
     modalities: Iterable[str] | None = None,
-    image_options: Dict[str, Any] | None = None,
+    image_options: dict[str, Any] | None = None,
 ) -> None:
     """Invoke GPT-5 to produce modality prompts and persist them."""
 
@@ -96,7 +96,7 @@ def generate_prompts_for_run(
     client = OpenAI(api_key=api_key)
     instruction = _build_prompt_instruction(modalities)
     Run.objects.filter(id=run.id).update(orchestration_prompt=instruction)
-    user_blocks: list[Dict[str, Any]] = [
+    user_blocks: list[dict[str, Any]] = [
         {
             "type": "input_text",
             "text": (
@@ -128,7 +128,7 @@ def generate_prompts_for_run(
             }
         )
 
-    request_kwargs: Dict[str, Any] = {}
+    request_kwargs: dict[str, Any] = {}
     if submitted_url:
         request_kwargs["tools"] = [{"type": "web_search"}]
 
@@ -275,10 +275,10 @@ def _queue_image_generation(run: Run) -> None:
     generate_images_for_run.delay(str(run.id))
 
 
-def _expected_step_kinds(run: Run) -> Set[str]:
+def _expected_step_kinds(run: Run) -> set[str]:
     """Return the set of step kinds required for the run to finish."""
 
-    kinds: Set[str] = {StepKind.ANALYZE}
+    kinds: set[str] = {StepKind.ANALYZE}
     modalities = set(run.requested_modalities or [])
     if PromptKind.IMAGE in modalities:
         kinds.add(StepKind.IMAGE)

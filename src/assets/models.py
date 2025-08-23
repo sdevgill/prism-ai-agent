@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
-from typing import Dict, Optional
 
 from django.db import models
 
@@ -64,7 +63,7 @@ class Asset(models.Model):
         return ""
 
     @property
-    def source(self) -> Optional[Run]:  # Template helper compatibility
+    def source(self) -> Run | None:  # Template helper compatibility
         """Expose the run for templates expecting `asset.source`."""
 
         return self.run
@@ -78,7 +77,7 @@ class Asset(models.Model):
         return Path(self.file.name).name
 
     @property
-    def display_metadata(self) -> Dict[str, str]:
+    def display_metadata(self) -> dict[str, str]:
         """Return the subset of metadata worth surfacing in the UI."""
 
         meta = self.metadata or {}
@@ -88,7 +87,7 @@ class Asset(models.Model):
             "quality": lambda v: str(v).capitalize(),
             "size": str,
         }
-        cleaned: Dict[str, str] = {}
+        cleaned: dict[str, str] = {}
         for key, transform in mappings.items():
             value = meta.get(key)
             if value:

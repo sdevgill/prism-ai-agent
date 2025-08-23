@@ -1,5 +1,3 @@
-from typing import List
-
 from django import forms
 from django.conf import settings
 
@@ -53,7 +51,7 @@ class RunRequestForm(forms.Form):
         help_text="Image resolution supported by GPT-Image-1.",
     )
 
-    def clean_modalities(self) -> List[str]:
+    def clean_modalities(self) -> list[str]:
         """Ensure at least one modality is selected."""
 
         data = self.cleaned_data.get("modalities", [])
