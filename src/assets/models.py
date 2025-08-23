@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
 
 from django.db import models
 
@@ -35,7 +35,7 @@ class Asset(models.Model):
         ordering = ("-created_at",)
 
     def __str__(self) -> str:
-        return f"{self.run.title} · {self.get_kind_display()} asset"
+        return f"{self.run.title} - {self.get_kind_display()} asset"
 
     @property
     def source_label(self) -> str:
@@ -68,3 +68,36 @@ class Asset(models.Model):
         """Expose the run for templates expecting `asset.source`."""
 
         return self.run
+
+    @property
+    def filename(self) -> str:
+        """Return the stored filename for download prompts."""
+
+        if not self.file:
+            return "asset"
+        return Path(self.file.name).name
+
+    @property
+    def display_metadata(self) -> Dict[str, str]:
+        """Return the subset of metadata worth surfacing in the UI."""
+
+        meta = self.metadata or {}
+        mappings = {
+            "provider": lambda v: "Open AI" if str(v).lower() == "openai" else str(v),
+            "model": str,
+            "quality": lambda v: str(v).capitalize(),
+            "size": str,
+        }
+        cleaned: Dict[str, str] = {}
+        for key, transform in mappings.items():
+            value = meta.get(key)
+            if value:
+                cleaned[key] = transform(value)
+        return cleaned
+
+    @property
+    def display_title(self) -> str:
+        """Provide a normalized title for templates."""
+
+        title = self.title or ""
+        return title.replace(" · ", " - ")

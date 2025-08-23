@@ -95,7 +95,7 @@ class Step(models.Model):
         ordering = ("created_at",)
 
     def __str__(self) -> str:
-        return f"{self.run.title} · {self.get_kind_display()}"
+        return f"{self.run.title} - {self.get_kind_display()}"
 
 
 class Prompt(models.Model):
@@ -120,4 +120,4 @@ class Prompt(models.Model):
         ordering = ("created_at",)
 
     def __str__(self) -> str:
-        return f"{self.run.title} · {self.get_kind_display()} prompt"
+        return f"{self.run.title} - {self.get_kind_display()} prompt"

@@ -422,7 +422,7 @@ def generate_images_for_run(self, run_id: str) -> None:
             run=run,
             step=step,
             kind=PromptKind.IMAGE,
-            title=f"{run.title} · Image {idx}",
+            title=f"{run.title} - Image {idx}",
             metadata={
                 "provider": "openai",
                 "model": getattr(settings, "OPENAI_IMAGE_MODEL", "gpt-image-1"),

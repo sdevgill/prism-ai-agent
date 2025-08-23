@@ -225,3 +225,6 @@ staticfiles/
 .django_tailwind_cli/
 assets/css/tailwind.css
 assets/css/tailwind.css.map
+
+# Generated media assets
+media/

@@ -38,11 +38,18 @@
                                         <img src="{{ asset.poster_url }}" alt="Poster frame for {{ asset.title|default:'generated video' }}" class="h-40 w-full object-cover" />
                                     </div>
                                 {% endif %}
-                                {% if asset.metadata %}
-                                    <p class="text-xs text-slate-500">{{ asset.metadata }}</p>
+                                {% if asset.display_metadata %}
+                                    <dl class="space-y-1 text-xs text-slate-500">
+                                        {% for key, value in asset.display_metadata.items %}
+                                            <div class="flex gap-1">
+                                                <dt class="font-semibold text-slate-600">{{ key|capfirst }}:</dt>
+                                                <dd>{{ value }}</dd>
+                                            </div>
+                                        {% endfor %}
+                                    </dl>
                                 {% endif %}
                                 <div class="mt-auto flex gap-3 text-xs font-medium">
-                                    <a href="{{ asset.download_url|default:'#' }}" class="text-blue-600 hover:text-blue-500">Download</a>
+                                    <a href="{{ asset.download_url|default:'#' }}" download="{{ asset.filename }}" class="text-blue-600 hover:text-blue-500">Download</a>
                                     <a href="{{ asset.view_url|default:'#' }}" class="text-slate-600 hover:text-slate-800">View details</a>
                                 </div>
                             </article>
