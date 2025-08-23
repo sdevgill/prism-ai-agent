@@ -9,7 +9,7 @@ Parameters:
 - icon_position: leading | trailing (defaults to leading)
 {% endcomment %}
 {% with variant=variant|default:'primary' size=size|default:'md' icon_position=icon_position|default:'leading' btn_type=type|default:'button' %}
-    {% with base_classes='inline-flex items-center justify-center gap-2 rounded-md font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none' %}
+    {% with base_classes='inline-flex items-center justify-center gap-2 rounded-md font-medium transition cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none' %}
         {% with size_classes='px-4 py-2 text-sm' %}
             {% if size == 'sm' %}{% with size_classes='px-3 py-1.5 text-sm' %}{% include 'partials/components/_button_inner.html' %}{% endwith %}{% elif size == 'lg' %}{% with size_classes='px-5 py-3 text-base' %}{% include 'partials/components/_button_inner.html' %}{% endwith %}{% else %}{% include 'partials/components/_button_inner.html' %}{% endif %}
         {% endwith %}

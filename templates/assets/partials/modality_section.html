@@ -1,13 +1,26 @@
 {% with assets_list=assets %}
     <section class="space-y-6">
         <header class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h2 class="text-xl font-semibold text-slate-900">
-                    {% if modality == 'image' %}Images{% elif modality == 'audio' %}Audio{% elif modality == 'video' %}Video{% else %}{{ modality|capfirst }}{% endif %}
-                </h2>
-                <p class="text-sm text-slate-600">
-                    {% if modality == 'image' %}Visual assets pulled from your sources.{% elif modality == 'audio' %}Voice and sound deliverables tied to each source.{% elif modality == 'video' %}Storyboard prompts and motion guides grouped by source.{% else %}Outputs generated for this format.{% endif %}
-                </p>
+            <div class="flex items-start gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                    {% if modality == 'image' %}
+                        <i data-feather="image" class="h-5 w-5"></i>
+                    {% elif modality == 'audio' %}
+                        <i data-feather="headphones" class="h-5 w-5"></i>
+                    {% elif modality == 'video' %}
+                        <i data-feather="film" class="h-5 w-5"></i>
+                    {% else %}
+                        <i data-feather="layers" class="h-5 w-5"></i>
+                    {% endif %}
+                </span>
+                <div>
+                    <h2 class="text-xl font-semibold text-slate-900">
+                        {% if modality == 'image' %}Images{% elif modality == 'audio' %}Audio{% elif modality == 'video' %}Video{% else %}{{ modality|capfirst }}{% endif %}
+                    </h2>
+                    <p class="text-sm text-slate-600">
+                        {% if modality == 'image' %}Visual assets pulled from your sources.{% elif modality == 'audio' %}Voice and sound deliverables tied to each source.{% elif modality == 'video' %}Storyboard prompts and motion guides grouped by source.{% else %}Outputs generated for this format.{% endif %}
+                    </p>
+                </div>
             </div>
             <span class="text-xs font-medium uppercase tracking-wide text-slate-400">{% if assets_list %}{{ assets_list|length }} item{% if assets_list|length != 1 %}s{% endif %}{% else %}0 items{% endif %}</span>
         </header>
@@ -22,7 +35,7 @@
                         {% for asset in source.list %}
                             <article class="flex h-full flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                                 <header class="space-y-1">
-                                    <p class="text-sm font-semibold text-slate-800">{{ asset.title|default:'Untitled asset' }}</p>
+                                    <p class="text-sm font-semibold text-slate-800">{{ asset.display_title|default:'Untitled asset' }}</p>
                                     <p class="text-xs text-slate-500">Created {{ asset.created_at|date:'M j, Y h:i A'|default:'recently' }}</p>
                                 </header>
                                 {% if asset.thumbnail_url and modality == 'image' %}
@@ -39,14 +52,15 @@
                                     </div>
                                 {% endif %}
                                 {% if asset.display_metadata %}
-                                    <dl class="space-y-1 text-xs text-slate-500">
+                                    <ul class="space-y-1 text-xs text-slate-500">
                                         {% for key, value in asset.display_metadata.items %}
-                                            <div class="flex gap-1">
-                                                <dt class="font-semibold text-slate-600">{{ key|capfirst }}:</dt>
-                                                <dd>{{ value }}</dd>
-                                            </div>
+                                            <li>
+                                                <span class="text-slate-400">-</span>
+                                                <span class="font-semibold text-slate-600">{{ key|capfirst }}:</span>
+                                                <span>{{ value }}</span>
+                                            </li>
                                         {% endfor %}
-                                    </dl>
+                                    </ul>
                                 {% endif %}
                                 <div class="mt-auto flex gap-3 text-xs font-medium">
                                     <a href="{{ asset.download_url|default:'#' }}" download="{{ asset.filename }}" class="text-blue-600 hover:text-blue-500">Download</a>
