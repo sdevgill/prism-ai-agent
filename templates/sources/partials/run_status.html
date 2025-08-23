@@ -1,0 +1,66 @@
+<div
+    class="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+    data-poll-active="{{ poll_active|yesno:'true,false' }}"
+>
+    <header class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <p class="text-sm font-semibold text-slate-800">{{ run.title }}</p>
+            <p class="text-xs text-slate-500">Run ID {{ run.id }}</p>
+        </div>
+        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ run_badge_class }}">{{ run.get_status_display }}</span>
+    </header>
+
+    <p class="text-sm text-slate-600">{{ status_message }}</p>
+
+    <dl class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+        <div>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Requested modalities</dt>
+            <dd>{% if modality_labels %}{{ modality_labels|join:", " }}{% else %}—{% endif %}</dd>
+        </div>
+        <div>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Updated</dt>
+            <dd>{{ run.updated_at|date:"M j, Y H:i" }}</dd>
+        </div>
+        <div>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Submitted</dt>
+            <dd>{{ run.created_at|date:"M j, Y H:i" }}</dd>
+        </div>
+        <div>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Source</dt>
+            <dd>
+                {% if run.submitted_url %}
+                    <a
+                        href="{{ run.submitted_url }}"
+                        class="text-blue-600 hover:text-blue-500"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        {{ run.submitted_url }}
+                    </a>
+                {% else %}
+                    Pasted text
+                {% endif %}
+            </dd>
+        </div>
+    </dl>
+
+    <section class="space-y-2">
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Steps</h4>
+        <ul class="space-y-1">
+            {% if steps %}
+                {% for step in steps %}
+                    <li class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        <span class="font-medium text-slate-700">{{ step.get_kind_display }}</span>
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 {{ step.badge_class }}">{{ step.get_status_display }}</span>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li class="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-500">Steps will appear shortly.</li>
+            {% endif %}
+        </ul>
+    </section>
+
+    {% if not poll_active %}
+        <p class="text-xs font-medium text-slate-600">This run is finished. Head to the Assets page to explore the new files.</p>
+    {% endif %}
+</div>

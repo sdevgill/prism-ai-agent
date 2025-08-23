@@ -1,5 +1,7 @@
 from django import forms
 from django.conf import settings
+from django.core import validators
+from django.core.exceptions import ValidationError
 
 from src.runs.models import PromptKind
 
@@ -16,7 +18,7 @@ class RunRequestForm(forms.Form):
 
     run_title = forms.CharField(max_length=160)
     input_mode = forms.ChoiceField(choices=INPUT_CHOICES)
-    source_url = forms.URLField(required=False)
+    source_url = forms.CharField(required=False)
     source_text = forms.CharField(widget=forms.Textarea, required=False)
     modalities = forms.MultipleChoiceField(
         choices=PromptKind.choices,
@@ -64,13 +66,25 @@ class RunRequestForm(forms.Form):
 
         cleaned = super().clean()
         mode = cleaned.get("input_mode")
-        url = cleaned.get("source_url")
+        url = cleaned.get("source_url", "")
         text = cleaned.get("source_text")
 
         if mode == self.INPUT_URL and not url:
             self.add_error("source_url", "Provide a URL to ingest.")
         elif mode == self.INPUT_TEXT and not text:
             self.add_error("source_text", "Paste the text Prism should analyze.")
+
+        if mode == self.INPUT_URL and url:
+            normalized = url.strip()
+            if normalized and not normalized.startswith(("http://", "https://")):
+                normalized = f"https://{normalized}"
+            url_validator = validators.URLValidator()
+            try:
+                url_validator(normalized)
+            except ValidationError:
+                self.add_error("source_url", "Enter a valid URL.")
+            else:
+                cleaned["source_url"] = normalized
 
         modalities = cleaned.get("modalities", [])
         if PromptKind.IMAGE in modalities:

@@ -9,24 +9,36 @@
             <p class="text-sm text-slate-600">Share a webpage or paste raw copy. Prism cleans it up, then builds images, narration, and video guides that stay true to the source.</p>
         </header>
 
-        <form method="post" action="{% url 'sources:ingest' %}" class="space-y-10" hx-post="{% url 'sources:ingest' %}" hx-target="#generate-status" hx-swap="innerHTML">
+        <form method="post" action="{% url 'sources:ingest' %}" class="space-y-10">
             {% csrf_token %}
-            {% include 'partials/components/form_field.html' with field_id='run_title' label='Give this run a title' description='Use something descriptive so you can find these assets later.' required=True control_template='sources/partials/title_control.html' %}
-            <fieldset class="space-y-4">
-                <legend class="text-sm font-semibold text-slate-700">How are you feeding the content?</legend>
-                <div class="flex flex-wrap gap-4 text-sm text-slate-600">
-                    <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
-                        <input type="radio" name="input_mode" value="url" class="size-4 text-blue-600 focus:ring-blue-500" checked />
-                        Website URL
-                    </label>
-                    <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
-                        <input type="radio" name="input_mode" value="text" class="size-4 text-blue-600 focus:ring-blue-500" />
-                        Pasted text
-                    </label>
-                </div>
-            </fieldset>
 
-            <div class="grid gap-8 lg:grid-cols-2">
+            <section class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 1</p>
+                <h2 class="text-lg font-semibold text-slate-900">Name your run</h2>
+                {% include 'partials/components/form_field.html' with field_id='run_title' label='Give this run a title' description='Use something descriptive so you can find these assets later.' required=True control_template='sources/partials/title_control.html' %}
+            </section>
+
+            <section class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 2</p>
+                <h2 class="text-lg font-semibold text-slate-900">Choose how you will supply the content</h2>
+                <fieldset class="space-y-4">
+                    <legend class="text-sm font-semibold text-slate-700">How are you feeding the content?</legend>
+                    <div class="flex flex-wrap gap-4 text-sm text-slate-600">
+                        <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
+                            <input type="radio" name="input_mode" value="url" class="size-4 text-blue-600 focus:ring-blue-500" checked />
+                            Website URL
+                        </label>
+                        <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500">
+                            <input type="radio" name="input_mode" value="text" class="size-4 text-blue-600 focus:ring-blue-500" />
+                            Pasted text
+                        </label>
+                    </div>
+                </fieldset>
+            </section>
+
+            <section class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 3</p>
+                <h2 class="text-lg font-semibold text-slate-900">Provide the source material</h2>
                 <div class="space-y-6">
                     <div data-input-field="url">
                         {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' control_template='sources/partials/url_control.html' %}
@@ -35,104 +47,113 @@
                         {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes. Prism will tidy formatting automatically.' control_template='sources/partials/text_control.html' %}
                     </div>
                 </div>
-                <div class="space-y-6">
-                    <fieldset class="space-y-3">
-                        <legend class="text-sm font-semibold text-slate-700">What should Prism generate?</legend>
-                        <p class="text-xs text-slate-500">Pick one or more outputs. You can always rerun from the same source with different formats.</p>
-                        {% with selected_modalities=form.modalities.value %}
-                            <div class="space-y-2">
-                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                    <input type="checkbox" name="modalities" value="image" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-modality-toggle="image" {% if selected_modalities and 'image' in selected_modalities %}checked{% endif %} />
-                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                        <i data-feather="image" class="h-5 w-5"></i>
-                                    </span>
-                                    <span>
-                                        <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(up to 3 renders)</span></span>
-                                        <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
-                                    </span>
-                                </label>
-                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                    <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
-                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                        <i data-feather="headphones" class="h-5 w-5"></i>
-                                    </span>
-                                    <span>
-                                        <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
-                                        <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
-                                    </span>
-                                </label>
-                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                    <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'video' in selected_modalities %}checked{% endif %} />
-                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                        <i data-feather="film" class="h-5 w-5"></i>
-                                    </span>
-                                    <span>
-                                        <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
-                                        <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
-                                    </span>
-                                </label>
-                            </div>
-                        {% endwith %}
-                    </fieldset>
-                    <div id="image-options" class="space-y-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 hidden" data-modality-options="image">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Image generation settings</p>
-                        <label class="flex flex-col gap-1">
-                            <span class="text-xs font-medium uppercase tracking-wide">How many images?</span>
-                            <select name="image_count" id="image_count" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                                <option value="1" {% if form.image_count.value|stringformat:'s' == '1' %}selected{% endif %}>1 image</option>
-                                <option value="2" {% if form.image_count.value|stringformat:'s' == '2' %}selected{% endif %}>2 images</option>
-                                <option value="3" {% if form.image_count.value|stringformat:'s' == '3' or not form.image_count.value %}selected{% endif %}>3 images</option>
-                            </select>
-                            {% if form.image_count.errors %}
-                                <p class="text-xs text-red-600">{{ form.image_count.errors|join:', ' }}</p>
-                            {% endif %}
-                        </label>
-                        <label class="flex flex-col gap-1">
-                            <span class="text-xs font-medium uppercase tracking-wide">Quality</span>
-                            <select name="image_quality" id="image_quality" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                                <option value="low" {% if form.image_quality.value == 'low' %}selected{% endif %}>Low (fast, rough ideation)</option>
-                                <option value="medium" {% if form.image_quality.value == 'medium' or not form.image_quality.value %}selected{% endif %}>Medium (balanced)</option>
-                                <option value="high" {% if form.image_quality.value == 'high' %}selected{% endif %}>High (maximum fidelity)</option>
-                            </select>
-                            {% if form.image_quality.errors %}
-                                <p class="text-xs text-red-600">{{ form.image_quality.errors|join:', ' }}</p>
-                            {% endif %}
-                        </label>
-                        <p class="text-xs text-blue-600">GPT-Image-1 supports 1–3 renders per call and quality tiers Low/Medium/High. Pick what fits your brief.</p>
-                        <label class="flex flex-col gap-1">
-                            <span class="text-xs font-medium uppercase tracking-wide">Dimensions</span>
-                            <select name="image_size" id="image_size" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                                <option value="1024x1024" {% if form.image_size.value == '1024x1024' %}selected{% endif %}>Square · 1024×1024</option>
-                                <option value="1024x1536" {% if form.image_size.value == '1024x1536' or not form.image_size.value %}selected{% endif %}>Portrait · 1024×1536 (default)</option>
-                                <option value="1536x1024" {% if form.image_size.value == '1536x1024' %}selected{% endif %}>Landscape · 1536×1024</option>
-                            </select>
-                            {% if form.image_size.errors %}
-                                <p class="text-xs text-red-600">{{ form.image_size.errors|join:', ' }}</p>
-                            {% endif %}
-                        </label>
-                        <p class="text-xs text-blue-600">Size options map to GPT-Image-1’s supported 1024 and 1536 combinations.</p>
-                    </div>
-                    <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                        <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
-                        <ul class="mt-2 space-y-1 text-xs text-blue-700">
-                            <li>• Prism shows progress live once the backend hooks in.</li>
-                            <li>• You’ll find every output in the Assets page grouped by source.</li>
-                            <li>• Need to iterate? Re-run with the same link and different formats.</li>
-                        </ul>
-                    </aside>
-                </div>
-            </div>
+            </section>
 
-            <div class="flex flex-wrap items-center gap-3">
+            <section class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 4</p>
+                <h2 class="text-lg font-semibold text-slate-900">Pick the outputs</h2>
+                <fieldset class="space-y-3">
+                    <legend class="text-sm font-semibold text-slate-700">What should Prism generate?</legend>
+                    <p class="text-xs text-slate-500">Pick one or more outputs. You can always rerun from the same source with different formats.</p>
+                    {% with selected_modalities=form.modalities.value %}
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="image" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-modality-toggle="image" {% if selected_modalities and 'image' in selected_modalities %}checked{% endif %} />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="image" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(up to 3 renders)</span></span>
+                                    <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
+                                </span>
+                            </label>
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="headphones" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
+                                    <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
+                                </span>
+                            </label>
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'video' in selected_modalities %}checked{% endif %} />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <i data-feather="film" class="h-5 w-5"></i>
+                                </span>
+                                <span>
+                                    <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
+                                    <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
+                                </span>
+                            </label>
+                        </div>
+                    {% endwith %}
+                </fieldset>
+            </section>
+
+            <section id="image-options" class="space-y-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 hidden" data-modality-options="image">
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 5</p>
+                <h2 class="text-lg font-semibold text-blue-800">Fine-tune image output</h2>
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Image generation settings</p>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">How many images?</span>
+                    <select name="image_count" id="image_count" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                        <option value="1" {% if form.image_count.value|stringformat:'s' == '1' %}selected{% endif %}>1 image</option>
+                        <option value="2" {% if form.image_count.value|stringformat:'s' == '2' %}selected{% endif %}>2 images</option>
+                        <option value="3" {% if form.image_count.value|stringformat:'s' == '3' or not form.image_count.value %}selected{% endif %}>3 images</option>
+                    </select>
+                    {% if form.image_count.errors %}
+                        <p class="text-xs text-red-600">{{ form.image_count.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Quality</span>
+                    <select name="image_quality" id="image_quality" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                        <option value="low" {% if form.image_quality.value == 'low' %}selected{% endif %}>Low (fast, rough ideation)</option>
+                        <option value="medium" {% if form.image_quality.value == 'medium' or not form.image_quality.value %}selected{% endif %}>Medium (balanced)</option>
+                        <option value="high" {% if form.image_quality.value == 'high' %}selected{% endif %}>High (maximum fidelity)</option>
+                    </select>
+                    {% if form.image_quality.errors %}
+                        <p class="text-xs text-red-600">{{ form.image_quality.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Dimensions</span>
+                    <select name="image_size" id="image_size" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                        <option value="1024x1024" {% if form.image_size.value == '1024x1024' %}selected{% endif %}>Square - 1024×1024</option>
+                        <option value="1024x1536" {% if form.image_size.value == '1024x1536' or not form.image_size.value %}selected{% endif %}>Portrait - 1024×1536 (default)</option>
+                        <option value="1536x1024" {% if form.image_size.value == '1536x1024' %}selected{% endif %}>Landscape - 1536×1024</option>
+                    </select>
+                    {% if form.image_size.errors %}
+                        <p class="text-xs text-red-600">{{ form.image_size.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <p class="text-xs text-blue-600">GPT-Image-1 supports 1–3 renders per call and quality tiers Low/Medium/High. Pick what fits your brief.</p>
+                <p class="text-xs text-blue-600">Size options map to GPT-Image-1’s supported 1024 and 1536 combinations.</p>
+            </section>
+
+            <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
+                <ul class="mt-2 space-y-1 text-xs text-blue-700">
+                    <li>• Prism shows progress live once the backend hooks in.</li>
+                    <li>• You’ll find every output in the Assets page grouped by source.</li>
+                    <li>• Need to iterate? Re-run with the same link and different formats.</li>
+                </ul>
+            </aside>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
                 {% include 'partials/components/button.html' with label='Generate assets' type='submit' %}
                 {% include 'partials/components/button.html' with label='Clear fields' type='reset' variant='ghost' %}
             </div>
         </form>
 
         <section id="generate-status" class="space-y-4" aria-live="polite">
-            <div class="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-500">
-                Live status updates will appear here once HTMX endpoints are wired up.
-            </div>
+            {% if status_url %}
+                <div class="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-500">
+                    Starting assets generation...
+                </div>
+            {% endif %}
         </section>
     </section>
 {% endblock %}
@@ -148,6 +169,8 @@
             const textWrapper = document.querySelector('[data-input-field="text"]');
             const imageToggle = document.querySelector('[data-modality-toggle="image"]');
             const imageOptions = document.querySelector('[data-modality-options="image"]');
+            const statusUrl = '{{ status_url|default:""|escapejs }}';
+            const statusContainer = document.getElementById('generate-status');
 
             if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper) {
                 return;
@@ -187,6 +210,41 @@
 
                 imageToggle.addEventListener('change', toggleImageOptions);
                 toggleImageOptions();
+            }
+
+            const pollStatus = (url) => {
+                if (!url || !statusContainer) {
+                    return;
+                }
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'HX-Request': 'true',
+                    },
+                    credentials: 'same-origin',
+                })
+                    .then((response) => (response.ok ? response.text() : Promise.reject()))
+                    .then((html) => {
+                        statusContainer.innerHTML = html;
+                        if (typeof window.refreshFeatherIcons === 'function') {
+                            window.refreshFeatherIcons();
+                        }
+
+                        const root = statusContainer.querySelector('[data-poll-active]');
+                        const shouldContinue = root && root.dataset.pollActive === 'true';
+
+                        if (shouldContinue) {
+                            window.setTimeout(() => pollStatus(url), 3000);
+                        }
+                    })
+                    .catch(() => {
+                        statusContainer.innerHTML = '<div class="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700">We could not load live status. Refresh the page to try again.</div>';
+                    });
+            };
+
+            if (statusUrl && statusContainer) {
+                pollStatus(statusUrl);
             }
         })();
     </script>
