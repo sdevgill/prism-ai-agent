@@ -27,6 +27,7 @@ class SourceIngestView(LoginRequiredMixin, FormView):
         """
 
         cleaned = form.cleaned_data
+        image_options = cleaned.get("image_options")
         run = Run.objects.create(
             owner=self.request.user,
             title=cleaned["run_title"],
@@ -34,7 +35,10 @@ class SourceIngestView(LoginRequiredMixin, FormView):
             if cleaned["input_mode"] == RunRequestForm.INPUT_URL
             else "",
             requested_modalities=cleaned["modalities"],
-            params={"input_mode": cleaned["input_mode"]},
+            params={
+                "input_mode": cleaned["input_mode"],
+                "image": image_options,
+            },
         )
         step, _ = Step.objects.get_or_create(run=run, kind=StepKind.ANALYZE)
         step.status = StepStatus.PENDING
@@ -46,6 +50,7 @@ class SourceIngestView(LoginRequiredMixin, FormView):
             "submitted_url": run.submitted_url or None,
             "source_text": cleaned.get("source_text", "") or None,
             "modalities": cleaned["modalities"],
+            "image_options": image_options,
         }
         generate_prompts_for_run.delay(str(run.id), **payload)
 

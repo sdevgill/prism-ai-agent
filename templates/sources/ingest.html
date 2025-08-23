@@ -39,39 +39,79 @@
                     <fieldset class="space-y-3">
                         <legend class="text-sm font-semibold text-slate-700">What should Prism generate?</legend>
                         <p class="text-xs text-slate-500">Pick one or more outputs. You can always rerun from the same source with different formats.</p>
-                        <div class="space-y-2">
-                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                <input type="checkbox" name="modalities" value="image" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                    <i data-feather="image" class="h-5 w-5"></i>
-                                </span>
-                                <span>
-                                    <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(3 renders)</span></span>
-                                    <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
-                                </span>
-                            </label>
-                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                    <i data-feather="headphones" class="h-5 w-5"></i>
-                                </span>
-                                <span>
-                                    <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
-                                    <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
-                                </span>
-                            </label>
-                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
-                                <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                    <i data-feather="film" class="h-5 w-5"></i>
-                                </span>
-                                <span>
-                                    <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
-                                    <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
-                                </span>
-                            </label>
-                        </div>
+                        {% with selected_modalities=form.modalities.value %}
+                            <div class="space-y-2">
+                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                    <input type="checkbox" name="modalities" value="image" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-modality-toggle="image" {% if selected_modalities and 'image' in selected_modalities %}checked{% endif %} />
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                        <i data-feather="image" class="h-5 w-5"></i>
+                                    </span>
+                                    <span>
+                                        <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(up to 3 renders)</span></span>
+                                        <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
+                                    </span>
+                                </label>
+                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                    <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                        <i data-feather="headphones" class="h-5 w-5"></i>
+                                    </span>
+                                    <span>
+                                        <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
+                                        <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
+                                    </span>
+                                </label>
+                                <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500">
+                                    <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'video' in selected_modalities %}checked{% endif %} />
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                        <i data-feather="film" class="h-5 w-5"></i>
+                                    </span>
+                                    <span>
+                                        <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
+                                        <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
+                                    </span>
+                                </label>
+                            </div>
+                        {% endwith %}
                     </fieldset>
+                    <div id="image-options" class="space-y-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 hidden" data-modality-options="image">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Image generation settings</p>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-medium uppercase tracking-wide">How many images?</span>
+                            <select name="image_count" id="image_count" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                <option value="1" {% if form.image_count.value|stringformat:'s' == '1' %}selected{% endif %}>1 image</option>
+                                <option value="2" {% if form.image_count.value|stringformat:'s' == '2' %}selected{% endif %}>2 images</option>
+                                <option value="3" {% if form.image_count.value|stringformat:'s' == '3' or not form.image_count.value %}selected{% endif %}>3 images</option>
+                            </select>
+                            {% if form.image_count.errors %}
+                                <p class="text-xs text-red-600">{{ form.image_count.errors|join:', ' }}</p>
+                            {% endif %}
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-medium uppercase tracking-wide">Quality</span>
+                            <select name="image_quality" id="image_quality" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                <option value="low" {% if form.image_quality.value == 'low' %}selected{% endif %}>Low (fast, rough ideation)</option>
+                                <option value="medium" {% if form.image_quality.value == 'medium' or not form.image_quality.value %}selected{% endif %}>Medium (balanced)</option>
+                                <option value="high" {% if form.image_quality.value == 'high' %}selected{% endif %}>High (maximum fidelity)</option>
+                            </select>
+                            {% if form.image_quality.errors %}
+                                <p class="text-xs text-red-600">{{ form.image_quality.errors|join:', ' }}</p>
+                            {% endif %}
+                        </label>
+                        <p class="text-xs text-blue-600">GPT-Image-1 supports 1–3 renders per call and quality tiers Low/Medium/High. Pick what fits your brief.</p>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-medium uppercase tracking-wide">Dimensions</span>
+                            <select name="image_size" id="image_size" class="rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                <option value="1024x1024" {% if form.image_size.value == '1024x1024' %}selected{% endif %}>Square · 1024×1024</option>
+                                <option value="1024x1536" {% if form.image_size.value == '1024x1536' or not form.image_size.value %}selected{% endif %}>Portrait · 1024×1536 (default)</option>
+                                <option value="1536x1024" {% if form.image_size.value == '1536x1024' %}selected{% endif %}>Landscape · 1536×1024</option>
+                            </select>
+                            {% if form.image_size.errors %}
+                                <p class="text-xs text-red-600">{{ form.image_size.errors|join:', ' }}</p>
+                            {% endif %}
+                        </label>
+                        <p class="text-xs text-blue-600">Size options map to GPT-Image-1’s supported 1024 and 1536 combinations.</p>
+                    </div>
                     <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
                         <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
                         <ul class="mt-2 space-y-1 text-xs text-blue-700">
@@ -106,6 +146,8 @@
             const textField = document.getElementById('source_text');
             const urlWrapper = document.querySelector('[data-input-field="url"]');
             const textWrapper = document.querySelector('[data-input-field="text"]');
+            const imageToggle = document.querySelector('[data-modality-toggle="image"]');
+            const imageOptions = document.querySelector('[data-modality-options="image"]');
 
             if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper) {
                 return;
@@ -133,6 +175,19 @@
             });
 
             toggleFields();
+
+            if (imageToggle && imageOptions) {
+                const toggleImageOptions = () => {
+                    if (imageToggle.checked) {
+                        imageOptions.classList.remove('hidden');
+                    } else {
+                        imageOptions.classList.add('hidden');
+                    }
+                };
+
+                imageToggle.addEventListener('change', toggleImageOptions);
+                toggleImageOptions();
+            }
         })();
     </script>
 {% endblock %}
