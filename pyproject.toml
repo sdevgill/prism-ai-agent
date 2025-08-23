@@ -17,6 +17,7 @@ dependencies = [
     "django-browser-reload",
     "django-tailwind-cli",
     "openai",
+    "tiktoken",
 ]
 
 [project.optional-dependencies]
