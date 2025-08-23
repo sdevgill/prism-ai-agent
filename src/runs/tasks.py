@@ -29,8 +29,8 @@ def _build_prompt_instruction(modalities: Iterable[str]) -> str:
     return (
         "You are a creative director generating downstream prompts for generative models. "
         "Return a JSON object with the keys '<modality>_prompt' for each requested modality. "
-        "Each prompt should be detailed, reference the source material faithfully, and avoid quotes from "
-        "the original text. Requested modalities: "
+        "Each prompt should be detailed and reference the source material faithfully. "
+        "Paraphrase rather than quote the original text. Requested modalities: "
         f"{readable}."
     )
 
@@ -107,7 +107,8 @@ def generate_prompts_for_run(
                 "type": "input_text",
                 "text": (
                     "Source URL: "
-                    f"{submitted_url}. Use the browsing tool to pull the latest content, not cached summaries."
+                    f"{submitted_url}. Use the browsing tool to pull the latest content. "
+                    "Skip cached summaries."
                 ),
             }
         )
@@ -133,6 +134,8 @@ def generate_prompts_for_run(
                 {"role": "system", "content": instruction},
                 {"role": "user", "content": user_blocks},
             ],
+            reasoning={"effort": "medium", "summary": None},
+            text={"format": {"type": "text"}, "verbosity": "medium"},
             **request_kwargs,
         )
     except OpenAIError as exc:
