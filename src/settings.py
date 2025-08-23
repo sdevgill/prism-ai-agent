@@ -164,6 +164,9 @@ CELERY_RESULT_BACKEND = REDIS_URL
 # OpenAI --------------------------------------------------------------------
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 OPENAI_RESPONSES_MODEL = env("OPENAI_RESPONSES_MODEL", default="gpt-5")
+OPENAI_IMAGE_MODEL = env("OPENAI_IMAGE_MODEL", default="gpt-image-1")
+OPENAI_IMAGE_SIZE = env("OPENAI_IMAGE_SIZE", default="1024x1536")
+OPENAI_IMAGE_QUALITY = env("OPENAI_IMAGE_QUALITY", default="medium")
 
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
