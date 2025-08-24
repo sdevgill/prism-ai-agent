@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import tempfile
 from pathlib import Path
 
 import environ
@@ -160,6 +161,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_BEAT_SCHEDULE_FILENAME = env(
+    "CELERY_BEAT_SCHEDULE_FILENAME",
+    default=os.path.join(tempfile.gettempdir(), "celerybeat-schedule"),
+)
 
 # OpenAI --------------------------------------------------------------------
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
