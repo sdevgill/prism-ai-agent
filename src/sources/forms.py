@@ -58,7 +58,11 @@ class RunRequestForm(forms.Form):
     )
 
     audio_voice = forms.ChoiceField(
-        choices=(("ash", "Ash"),),
+        choices=(
+            ("ash", "Ash"),
+            ("nova", "Nova"),
+            ("ballad", "Ballad"),
+        ),
         required=False,
         initial=getattr(settings, "OPENAI_AUDIO_VOICE", "ash"),
         help_text="Voice preset used for text-to-speech output.",
@@ -143,7 +147,7 @@ class RunRequestForm(forms.Form):
             format_ = (
                 cleaned.get("audio_format") or getattr(settings, "OPENAI_AUDIO_FORMAT", "mp3")
             ).lower()
-            valid_voices = {"ash"}
+            valid_voices = {"ash", "nova", "ballad"}
             valid_formats = {"mp3", "wav"}
             if voice not in valid_voices:
                 self.add_error("audio_voice", "Choose an available voice preset.")

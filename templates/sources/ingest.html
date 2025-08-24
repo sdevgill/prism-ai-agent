@@ -140,7 +140,9 @@
                 <label class="flex flex-col gap-1">
                     <span class="text-xs font-medium uppercase tracking-wide">Voice preset</span>
                     <select name="audio_voice" id="audio_voice" class="cursor-pointer rounded-md border border-purple-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200">
-                        <option value="ash" {% if form.audio_voice.value == 'ash' or not form.audio_voice.value %}selected{% endif %}>Ash (friendly, emotive)</option>
+                        <option value="ash" data-voice-label="Ash" data-voice-detail="like a warm radio spot" {% if form.audio_voice.value == 'ash' or not form.audio_voice.value %}selected{% endif %}>Ash - Warm radio delivery</option>
+                        <option value="nova" data-voice-label="Nova" data-voice-detail="clean and modern" {% if form.audio_voice.value == 'nova' %}selected{% endif %}>Nova - Crisp storyteller</option>
+                        <option value="ballad" data-voice-label="Ballad" data-voice-detail="with an adventurous British edge" {% if form.audio_voice.value == 'ballad' %}selected{% endif %}>Ballad - Adventurous British tone</option>
                     </select>
                     {% if form.audio_voice.errors %}
                         <p class="text-xs text-red-600">{{ form.audio_voice.errors|join:', ' }}</p>
@@ -156,7 +158,7 @@
                         <p class="text-xs text-red-600">{{ form.audio_format.errors|join:', ' }}</p>
                     {% endif %}
                 </label>
-                <p class="text-xs text-purple-600">We prime the Ash voice with the system guidance "Speak in an emotive and friendly tone." so the read lands like a warm radio spot.</p>
+                <p class="text-xs text-purple-600">We prime the <span data-audio-voice-label>Ash</span> voice with the system guidance "Speak in an emotive and friendly tone." so the read lands <span data-audio-voice-detail>like a warm radio spot</span>.</p>
             </section>
 
             <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
@@ -197,6 +199,9 @@
             const tokenCounter = document.querySelector('[data-token-count]');
             const modalityToggles = document.querySelectorAll('[data-modality-toggle]');
             const modalityOptionSections = document.querySelectorAll('[data-modality-options]');
+            const audioVoiceSelect = document.getElementById('audio_voice');
+            const audioVoiceLabel = document.querySelector('[data-audio-voice-label]');
+            const audioVoiceDetail = document.querySelector('[data-audio-voice-detail]');
             const statusUrl = '{{ status_url|default:""|escapejs }}';
             const statusContainer = document.getElementById('generate-status');
             const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
@@ -308,6 +313,23 @@
 
             toggleFields();
 
+            const syncAudioVoiceLabel = () => {
+                if (!audioVoiceSelect || !audioVoiceLabel) {
+                    return;
+                }
+                const option = audioVoiceSelect.options[audioVoiceSelect.selectedIndex];
+                if (option) {
+                    const humanLabel = option.dataset.voiceLabel || option.textContent.split(' · ')[0].trim() || option.textContent.split('-')[0].trim();
+                    const detailLabel = option.dataset.voiceDetail || audioVoiceLabel?.textContent || '';
+                    if (audioVoiceLabel) {
+                        audioVoiceLabel.textContent = humanLabel;
+                    }
+                    if (audioVoiceDetail) {
+                        audioVoiceDetail.textContent = detailLabel;
+                    }
+                }
+            };
+
             const syncModalityOptions = () => {
                 if (!modalityOptionSections.length) {
                     return;
@@ -322,6 +344,7 @@
                         section.classList.add('hidden');
                     }
                 });
+                syncAudioVoiceLabel();
             };
 
             modalityToggles.forEach((toggle) => {
@@ -329,6 +352,11 @@
             });
 
             syncModalityOptions();
+
+            if (audioVoiceSelect) {
+                audioVoiceSelect.addEventListener('change', syncAudioVoiceLabel);
+                syncAudioVoiceLabel();
+            }
 
             const pollStatus = (url) => {
                 if (!url || !statusContainer) {
