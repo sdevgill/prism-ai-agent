@@ -10,7 +10,16 @@
         <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ run_badge_class }}">{{ run.get_status_display }}</span>
     </header>
 
-    <p class="text-sm text-slate-600">{{ status_message }}</p>
+    <p class="flex items-center gap-2 text-sm text-slate-600">
+        {% if poll_active %}
+            <i data-feather="loader" class="h-4 w-4 animate-spin text-blue-500"></i>
+        {% elif run.status == 'COMPLETED' %}
+            <i data-feather="check-circle" class="h-4 w-4 text-emerald-500"></i>
+        {% elif run.status == 'FAILED' %}
+            <i data-feather="x-circle" class="h-4 w-4 text-rose-500"></i>
+        {% endif %}
+        <span>{{ status_message }}</span>
+    </p>
 
     <dl class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
         <div>
