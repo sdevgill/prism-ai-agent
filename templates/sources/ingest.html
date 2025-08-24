@@ -68,13 +68,13 @@
                                 </span>
                             </label>
                             <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500 cursor-pointer">
-                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
+                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-modality-toggle="audio" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
                                 <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                                     <i data-feather="headphones" class="h-5 w-5"></i>
                                 </span>
                                 <span>
                                     <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
-                                    <p class="text-xs text-slate-500">Narration scripts and voice readouts ready for podcasts or spots.</p>
+                                    <p class="text-xs text-slate-500">Narration comes back as an emotive Ash voice read, perfect for ~20 second radio spots.</p>
                                 </span>
                             </label>
                             <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500 cursor-pointer">
@@ -133,6 +133,32 @@
                 <p class="text-xs text-blue-600">Size options map to GPT-Image-1’s supported 1024 and 1536 combinations.</p>
             </section>
 
+            <section id="audio-options" class="space-y-3 rounded-lg border border-purple-100 bg-purple-50 px-4 py-3 text-sm text-purple-700 hidden" data-modality-options="audio">
+                <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Step 6</p>
+                <h2 class="text-lg font-semibold text-purple-800">Tune the narration</h2>
+                <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Audio generation settings</p>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Voice preset</span>
+                    <select name="audio_voice" id="audio_voice" class="cursor-pointer rounded-md border border-purple-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                        <option value="ash" {% if form.audio_voice.value == 'ash' or not form.audio_voice.value %}selected{% endif %}>Ash (friendly, emotive)</option>
+                    </select>
+                    {% if form.audio_voice.errors %}
+                        <p class="text-xs text-red-600">{{ form.audio_voice.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Output format</span>
+                    <select name="audio_format" id="audio_format" class="cursor-pointer rounded-md border border-purple-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                        <option value="mp3" {% if form.audio_format.value == 'mp3' or not form.audio_format.value %}selected{% endif %}>MP3 (small file)</option>
+                        <option value="wav" {% if form.audio_format.value == 'wav' %}selected{% endif %}>WAV (lossless)</option>
+                    </select>
+                    {% if form.audio_format.errors %}
+                        <p class="text-xs text-red-600">{{ form.audio_format.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <p class="text-xs text-purple-600">We prime the Ash voice with the system guidance "Speak in an emotive and friendly tone." so the read lands like a warm radio spot.</p>
+            </section>
+
             <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
                 <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
                 <ul class="mt-2 space-y-1 text-xs text-blue-700">
@@ -169,8 +195,8 @@
             const textWrapper = document.querySelector('[data-input-field="text"]');
             const charCounter = document.querySelector('[data-char-count]');
             const tokenCounter = document.querySelector('[data-token-count]');
-            const imageToggle = document.querySelector('[data-modality-toggle="image"]');
-            const imageOptions = document.querySelector('[data-modality-options="image"]');
+            const modalityToggles = document.querySelectorAll('[data-modality-toggle]');
+            const modalityOptionSections = document.querySelectorAll('[data-modality-options]');
             const statusUrl = '{{ status_url|default:""|escapejs }}';
             const statusContainer = document.getElementById('generate-status');
             const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
@@ -282,18 +308,27 @@
 
             toggleFields();
 
-            if (imageToggle && imageOptions) {
-                const toggleImageOptions = () => {
-                    if (imageToggle.checked) {
-                        imageOptions.classList.remove('hidden');
+            const syncModalityOptions = () => {
+                if (!modalityOptionSections.length) {
+                    return;
+                }
+                modalityOptionSections.forEach((section) => {
+                    const modality = section.getAttribute('data-modality-options');
+                    const selector = modality ? '[data-modality-toggle="' + modality + '"]' : null;
+                    const toggle = selector ? document.querySelector(selector) : null;
+                    if (toggle && toggle.checked) {
+                        section.classList.remove('hidden');
                     } else {
-                        imageOptions.classList.add('hidden');
+                        section.classList.add('hidden');
                     }
-                };
+                });
+            };
 
-                imageToggle.addEventListener('change', toggleImageOptions);
-                toggleImageOptions();
-            }
+            modalityToggles.forEach((toggle) => {
+                toggle.addEventListener('change', syncModalityOptions);
+            });
+
+            syncModalityOptions();
 
             const pollStatus = (url) => {
                 if (!url || !statusContainer) {

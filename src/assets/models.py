@@ -63,6 +63,26 @@ class Asset(models.Model):
         return ""
 
     @property
+    def audio_url(self) -> str:
+        """Return the playback URL for audio assets."""
+
+        if self.kind == PromptKind.AUDIO and self.file:
+            return self.file.url
+        return ""
+
+    @property
+    def audio_mime_type(self) -> str:
+        """Return the MIME type for the stored audio clip."""
+
+        if self.kind != PromptKind.AUDIO:
+            return ""
+        meta = self.metadata or {}
+        audio_format = str(meta.get("format", "wav")).lower()
+        if audio_format == "mp3":
+            return "audio/mpeg"
+        return f"audio/{audio_format}"
+
+    @property
     def source(self) -> Run | None:  # Template helper compatibility
         """Expose the run for templates expecting `asset.source`."""
 
@@ -86,6 +106,11 @@ class Asset(models.Model):
             "model": str,
             "quality": lambda v: str(v).capitalize(),
             "size": str,
+            "voice": lambda v: str(v).title(),
+            "format": lambda v: str(v).upper(),
+            "duration_seconds": lambda v: f"{float(v):.1f}s"
+            if isinstance(v, (int, float))
+            else str(v),
         }
         cleaned: dict[str, str] = {}
         for key, transform in mappings.items():

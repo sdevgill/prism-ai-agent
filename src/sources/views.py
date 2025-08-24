@@ -49,6 +49,7 @@ class SourceIngestView(LoginRequiredMixin, FormView):
 
         cleaned = form.cleaned_data
         image_options = cleaned.get("image_options")
+        audio_options = cleaned.get("audio_options")
         run = Run.objects.create(
             owner=self.request.user,
             title=cleaned["run_title"],
@@ -59,6 +60,7 @@ class SourceIngestView(LoginRequiredMixin, FormView):
             params={
                 "input_mode": cleaned["input_mode"],
                 "image": image_options,
+                "audio": audio_options,
             },
         )
         step, _ = Step.objects.get_or_create(run=run, kind=StepKind.ANALYZE)
@@ -72,6 +74,7 @@ class SourceIngestView(LoginRequiredMixin, FormView):
             "source_text": cleaned.get("source_text", "") or None,
             "modalities": cleaned["modalities"],
             "image_options": image_options,
+            "audio_options": audio_options,
         }
         generate_prompts_for_run.delay(str(run.id), **payload)
 
@@ -178,12 +181,24 @@ class RunStatusFragmentView(LoginRequiredMixin, TemplateView):
 
         analyze_step = steps_by_kind.get(StepKind.ANALYZE)
         image_step = steps_by_kind.get(StepKind.IMAGE)
+        audio_step = steps_by_kind.get(StepKind.AUDIO)
 
         if not analyze_step or analyze_step.status != StepStatus.COMPLETED:
             return "Starting assets generation..."
 
+        pending = []
         if image_step and image_step.status != StepStatus.COMPLETED:
-            return "Assets generation in progress...."
+            pending.append("images")
+        if audio_step and audio_step.status != StepStatus.COMPLETED:
+            pending.append("audio narration")
+
+        if pending:
+            if len(pending) == 1:
+                label = pending[0]
+                if label == "images":
+                    return "Image renders are in progress..."
+                return "Audio narration is rendering..."
+            return "Images and audio narration are rendering in parallel..."
 
         return "Assets generation in progress...."
 

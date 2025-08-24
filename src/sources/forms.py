@@ -57,6 +57,22 @@ class RunRequestForm(forms.Form):
         help_text="Image resolution supported by GPT-Image-1.",
     )
 
+    audio_voice = forms.ChoiceField(
+        choices=(("ash", "Ash"),),
+        required=False,
+        initial=getattr(settings, "OPENAI_AUDIO_VOICE", "ash"),
+        help_text="Voice preset used for text-to-speech output.",
+    )
+    audio_format = forms.ChoiceField(
+        choices=(
+            ("mp3", "MP3"),
+            ("wav", "WAV"),
+        ),
+        required=False,
+        initial=getattr(settings, "OPENAI_AUDIO_FORMAT", "mp3"),
+        help_text="Container format for the generated narration file.",
+    )
+
     def clean_modalities(self) -> list[str]:
         """Ensure at least one modality is selected."""
 
@@ -119,5 +135,22 @@ class RunRequestForm(forms.Form):
                 }
         else:
             cleaned["image_options"] = None
+
+        if PromptKind.AUDIO in modalities:
+            voice = (
+                cleaned.get("audio_voice") or getattr(settings, "OPENAI_AUDIO_VOICE", "ash")
+            ).lower()
+            format_ = (
+                cleaned.get("audio_format") or getattr(settings, "OPENAI_AUDIO_FORMAT", "mp3")
+            ).lower()
+            valid_voices = {"ash"}
+            valid_formats = {"mp3", "wav"}
+            if voice not in valid_voices:
+                self.add_error("audio_voice", "Choose an available voice preset.")
+            if format_ not in valid_formats:
+                self.add_error("audio_format", "Pick a supported audio format.")
+            cleaned["audio_options"] = {"voice": voice, "format": format_}
+        else:
+            cleaned["audio_options"] = None
 
         return cleaned

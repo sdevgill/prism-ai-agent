@@ -42,10 +42,19 @@
                                     <div class="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100">
                                         <img src="{{ asset.thumbnail_url }}" alt="Preview of {{ asset.title|default:'generated image' }}" class="h-40 w-full object-cover" />
                                     </div>
-                                {% elif asset.waveform_url and modality == 'audio' %}
-                                    <div class="flex h-24 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
-                                        Audio preview placeholder.
-                                    </div>
+                                {% elif modality == 'audio' %}
+                                    {% if asset.audio_url %}
+                                        <div class="rounded-md border border-slate-200 bg-slate-50 p-3">
+                                            <audio controls preload="metadata" class="w-full">
+                                                <source src="{{ asset.audio_url }}" type="{{ asset.audio_mime_type|default:'audio/mpeg' }}" />
+                                                Your browser does not support audio playback.
+                                            </audio>
+                                        </div>
+                                    {% else %}
+                                        <div class="flex h-24 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+                                            Audio preview unavailable.
+                                        </div>
+                                    {% endif %}
                                 {% elif asset.poster_url and modality == 'video' %}
                                     <div class="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100">
                                         <img src="{{ asset.poster_url }}" alt="Poster frame for {{ asset.title|default:'generated video' }}" class="h-40 w-full object-cover" />
