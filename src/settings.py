@@ -172,6 +172,13 @@ OPENAI_RESPONSES_MODEL = env("OPENAI_RESPONSES_MODEL", default="gpt-5")
 OPENAI_IMAGE_MODEL = env("OPENAI_IMAGE_MODEL", default="gpt-image-1")
 OPENAI_IMAGE_SIZE = env("OPENAI_IMAGE_SIZE", default="1024x1536")
 OPENAI_IMAGE_QUALITY = env("OPENAI_IMAGE_QUALITY", default="medium")
+OPENAI_AUDIO_MODEL = env("OPENAI_AUDIO_MODEL", default="gpt-4o-mini-tts")
+OPENAI_AUDIO_VOICE = env("OPENAI_AUDIO_VOICE", default="ash")
+OPENAI_AUDIO_FORMAT = env("OPENAI_AUDIO_FORMAT", default="mp3")
+OPENAI_AUDIO_SYSTEM_PROMPT = env(
+    "OPENAI_AUDIO_SYSTEM_PROMPT",
+    default="Speak in an emotive and friendly tone.",
+)
 
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
