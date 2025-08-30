@@ -93,7 +93,7 @@
             </section>
 
             <section id="image-options" class="space-y-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 hidden" data-modality-options="image">
-                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 5</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600" data-step-label>Step 5</p>
                 <h2 class="text-lg font-semibold text-blue-800">Fine-tune image output</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Image generation settings</p>
                 <label class="flex flex-col gap-1">
@@ -134,7 +134,7 @@
             </section>
 
             <section id="audio-options" class="space-y-3 rounded-lg border border-purple-100 bg-purple-50 px-4 py-3 text-sm text-purple-700 hidden" data-modality-options="audio">
-                <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Step 6</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-purple-600" data-step-label>Step 6</p>
                 <h2 class="text-lg font-semibold text-purple-800">Tune the narration</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Audio generation settings</p>
                 <label class="flex flex-col gap-1">
@@ -162,7 +162,7 @@
             </section>
 
             <section id="video-options" class="space-y-3 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 hidden" data-modality-options="video">
-                <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Step 7</p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600" data-step-label>Step 7</p>
                 <h2 class="text-lg font-semibold text-emerald-800">Shape the Veo render</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Video generation settings</p>
                 <label class="flex flex-col gap-1">
@@ -240,6 +240,7 @@
             const statusContainer = document.getElementById('generate-status');
             const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
             const tokenEndpoint = '{% url "sources:token-estimate" %}';
+            const baseOptionStep = 5;
 
             if (!modeInputs.length || !urlField || !textField || !urlWrapper || !textWrapper || !charCounter || !tokenCounter) {
                 return;
@@ -364,6 +365,25 @@
                 }
             };
 
+            const updateStepLabels = () => {
+                if (!modalityOptionSections.length) {
+                    return;
+                }
+                let stepNumber = baseOptionStep;
+                modalityOptionSections.forEach((section) => {
+                    const label = section.querySelector('[data-step-label]');
+                    if (!label) {
+                        return;
+                    }
+                    if (!section.classList.contains('hidden')) {
+                        label.textContent = `Step ${stepNumber}`;
+                        stepNumber += 1;
+                    } else {
+                        label.textContent = `Step ${stepNumber}`;
+                    }
+                });
+            };
+
             const syncModalityOptions = () => {
                 if (!modalityOptionSections.length) {
                     return;
@@ -379,6 +399,7 @@
                     }
                 });
                 syncAudioVoiceLabel();
+                updateStepLabels();
             };
 
             modalityToggles.forEach((toggle) => {
@@ -386,6 +407,7 @@
             });
 
             syncModalityOptions();
+            updateStepLabels();
 
             if (audioVoiceSelect) {
                 audioVoiceSelect.addEventListener('change', syncAudioVoiceLabel);
