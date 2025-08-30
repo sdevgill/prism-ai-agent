@@ -76,6 +76,38 @@ class RunRequestForm(forms.Form):
         initial=getattr(settings, "OPENAI_AUDIO_FORMAT", "mp3"),
         help_text="Container format for the generated narration file.",
     )
+    video_model = forms.ChoiceField(
+        choices=(
+            (
+                getattr(
+                    settings,
+                    "GOOGLE_VEO_FAST_MODEL",
+                    "veo-3.0-fast-generate-001",
+                ),
+                "Veo 3 Fast",
+            ),
+            (
+                getattr(settings, "GOOGLE_VEO_MODEL", "veo-3.0-generate-001"),
+                "Veo 3",
+            ),
+        ),
+        required=False,
+        initial=getattr(
+            settings,
+            "GOOGLE_VEO_FAST_MODEL",
+            "veo-3.0-fast-generate-001",
+        ),
+        help_text="Google Veo model to render the short-form video.",
+    )
+    video_resolution = forms.ChoiceField(
+        choices=(
+            ("720p", "720p"),
+            ("1080p", "1080p"),
+        ),
+        required=False,
+        initial=getattr(settings, "GOOGLE_VEO_DEFAULT_RESOLUTION", "720p"),
+        help_text="Select between 720p and 1080p output.",
+    )
 
     def clean_modalities(self) -> list[str]:
         """Ensure at least one modality is selected."""
@@ -156,5 +188,27 @@ class RunRequestForm(forms.Form):
             cleaned["audio_options"] = {"voice": voice, "format": format_}
         else:
             cleaned["audio_options"] = None
+
+        if PromptKind.VIDEO in modalities:
+            model_name = cleaned.get("video_model") or getattr(
+                settings,
+                "GOOGLE_VEO_FAST_MODEL",
+                "veo-3.0-fast-generate-001",
+            )
+            resolution = (cleaned.get("video_resolution") or "720p").lower()
+            valid_models = {
+                getattr(settings, "GOOGLE_VEO_FAST_MODEL", "veo-3.0-fast-generate-001"),
+                getattr(settings, "GOOGLE_VEO_MODEL", "veo-3.0-generate-001"),
+            }
+            if model_name not in valid_models:
+                self.add_error("video_model", "Pick a supported Veo model.")
+            if resolution not in {"720p", "1080p"}:
+                self.add_error("video_resolution", "Choose 720p or 1080p.")
+            cleaned["video_options"] = {
+                "model": model_name,
+                "resolution": resolution,
+            }
+        else:
+            cleaned["video_options"] = None
 
         return cleaned

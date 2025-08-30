@@ -67,9 +67,9 @@
                                     <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
                                 </span>
                             </label>
-                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500 cursor-pointer">
-                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" data-modality-toggle="audio" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
-                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-purple-500 cursor-pointer">
+                                <input type="checkbox" name="modalities" value="audio" class="mt-1 size-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500" data-modality-toggle="audio" {% if selected_modalities and 'audio' in selected_modalities %}checked{% endif %} />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600">
                                     <i data-feather="headphones" class="h-5 w-5"></i>
                                 </span>
                                 <span>
@@ -77,14 +77,14 @@
                                     <p class="text-xs text-slate-500">Narration comes back as an emotive Ash voice read, perfect for ~20 second radio spots.</p>
                                 </span>
                             </label>
-                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500 cursor-pointer">
-                                <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" {% if selected_modalities and 'video' in selected_modalities %}checked{% endif %} />
-                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                            <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-emerald-500 cursor-pointer">
+                                <input type="checkbox" name="modalities" value="video" class="mt-1 size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" data-modality-toggle="video" {% if selected_modalities and 'video' in selected_modalities %}checked{% endif %} />
+                                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                                     <i data-feather="film" class="h-5 w-5"></i>
                                 </span>
                                 <span>
-                                    <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(1 storyboard)</span></span>
-                                    <p class="text-xs text-slate-500">Storyboard beats, shot prompts, and motion cues.</p>
+                                    <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(8-second clip)</span></span>
+                                    <p class="text-xs text-slate-500">Veo 3 renders a short 16:9 marketing beat with optional narration.</p>
                                 </span>
                             </label>
                         </div>
@@ -159,6 +159,40 @@
                     {% endif %}
                 </label>
                 <p class="text-xs text-purple-600">We prime the <span data-audio-voice-label>Ash</span> voice with the system guidance "Speak in an emotive and friendly tone." so the read lands <span data-audio-voice-detail>like a warm radio spot</span>.</p>
+            </section>
+
+            <section id="video-options" class="space-y-3 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 hidden" data-modality-options="video">
+                <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Step 7</p>
+                <h2 class="text-lg font-semibold text-emerald-800">Shape the Veo render</h2>
+                <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Video generation settings</p>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Model</span>
+                    <select name="video_model" id="video_model" class="cursor-pointer rounded-md border border-emerald-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                        {% for value, label in form.video_model.field.choices %}
+                            <option value="{{ value }}" {% if form.video_model.value == value or not form.video_model.value and forloop.first %}selected{% endif %}>
+                                {% if forloop.first %}{{ label }} (default, renders faster){% else %}{{ label }} (best, renders slower){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.video_model.errors %}
+                        <p class="text-xs text-red-600">{{ form.video_model.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-medium uppercase tracking-wide">Resolution</span>
+                    <select name="video_resolution" id="video_resolution" class="cursor-pointer rounded-md border border-emerald-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                        {% for value, label in form.video_resolution.field.choices %}
+                            <option value="{{ value }}" {% if form.video_resolution.value == value or not form.video_resolution.value and forloop.first %}selected{% endif %}>
+                                {% if value == '720p' %}{{ label }} (default, renders faster){% else %}{{ label }} (best, renders slower){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.video_resolution.errors %}
+                        <p class="text-xs text-red-600">{{ form.video_resolution.errors|join:', ' }}</p>
+                    {% endif %}
+                </label>
+                <p class="text-xs text-emerald-600">Veo clips top out at roughly eight seconds, so we keep the script tight for the best render.</p>
+                <p class="text-xs text-emerald-600">720p exports are faster to preview; switch to 1080p when you’re happy with the direction.</p>
             </section>
 
             <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">

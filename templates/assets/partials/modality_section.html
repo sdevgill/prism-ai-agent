@@ -18,7 +18,7 @@
                         {% if modality == 'image' %}Images{% elif modality == 'audio' %}Audio{% elif modality == 'video' %}Video{% else %}{{ modality|capfirst }}{% endif %}
                     </h2>
                     <p class="text-sm text-slate-600">
-                        {% if modality == 'image' %}Visual assets pulled from your sources.{% elif modality == 'audio' %}Voice and sound deliverables tied to each source.{% elif modality == 'video' %}Storyboard prompts and motion guides grouped by source.{% else %}Outputs generated for this format.{% endif %}
+                        {% if modality == 'image' %}Visual assets pulled from your sources.{% elif modality == 'audio' %}Voice and sound deliverables tied to each source.{% elif modality == 'video' %}Short Veo clips rendered from your campaign prompts.{% else %}Outputs generated for this format.{% endif %}
                     </p>
                 </div>
             </div>
@@ -55,10 +55,19 @@
                                             Audio preview unavailable.
                                         </div>
                                     {% endif %}
-                                {% elif asset.poster_url and modality == 'video' %}
-                                    <div class="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100">
-                                        <img src="{{ asset.poster_url }}" alt="Poster frame for {{ asset.title|default:'generated video' }}" class="h-40 w-full object-cover" />
-                                    </div>
+                                {% elif modality == 'video' %}
+                                    {% if asset.video_url %}
+                                        <div class="relative overflow-hidden rounded-md border border-slate-200 bg-black">
+                                            <video controls preload="metadata" poster="{{ asset.poster_url|default:'' }}" class="h-40 w-full object-cover">
+                                                <source src="{{ asset.video_url }}" type="{{ asset.video_mime_type|default:'video/mp4' }}" />
+                                                Your browser does not support video playback.
+                                            </video>
+                                        </div>
+                                    {% else %}
+                                        <div class="flex h-24 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+                                            Video preview unavailable.
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                                 {% if asset.display_metadata %}
                                     <ul class="space-y-1 text-xs text-slate-500">
