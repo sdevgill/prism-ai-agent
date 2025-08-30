@@ -180,6 +180,13 @@ OPENAI_AUDIO_SYSTEM_PROMPT = env(
     default="Speak in an emotive and friendly tone.",
 )
 
+# Google Gemini ------------------------------------------------------------
+GOOGLE_API_KEY = env("GOOGLE_API_KEY", default="")
+GOOGLE_VEO_FAST_MODEL = env("GOOGLE_VEO_FAST_MODEL", default="veo-3.0-fast-generate-001")
+GOOGLE_VEO_MODEL = env("GOOGLE_VEO_MODEL", default="veo-3.0-generate-001")
+GOOGLE_VEO_DEFAULT_RESOLUTION = env("GOOGLE_VEO_DEFAULT_RESOLUTION", default="720p")
+GOOGLE_VEO_POLL_INTERVAL = env.int("GOOGLE_VEO_POLL_INTERVAL", default=5)
+
 # Security ------------------------------------------------------------------
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
