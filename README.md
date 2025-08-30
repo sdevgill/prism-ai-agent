@@ -92,3 +92,9 @@ Application dependencies live in `pyproject.toml` and are installed inside the c
 - Remove `./data/postgres` before restarting if you need a clean database.
 - Keep `docker compose logs -f worker` running while developing Celery tasks to watch job output.
 - Use `docker compose exec web bash` for an interactive shell inside the application container.
+
+--------------------------------------------------------------------------------------
+
+## AI Models Configuration
+
+Prism orchestrates OpenAI's **GPT-5** for prompts. The orchestrator model (**GPT-5**) feeds prompts to **GPT-Image-1** for images, **GPT-4o mini TTS** for audio and Google’s **Veo 3** for video.
