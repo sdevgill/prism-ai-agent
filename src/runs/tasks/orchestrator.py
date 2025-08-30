@@ -24,6 +24,7 @@ from src.runs.tokenization import PROMPT_TOKEN_LIMIT, truncate_to_limit
 from .audio import generate_audio_for_run
 from .common import _mark_run_failed, _maybe_finalize_run
 from .image import generate_images_for_run
+from .video import generate_video_for_run
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +44,21 @@ def _build_prompt_instruction(modalities: Iterable[str]) -> str:
         if PromptKind.AUDIO in modalities
         else ""
     )
+    video_clause = (
+        " For the video_prompt, design a concise storyboard for Google Veo."
+        " Limit the action to about 8 seconds, keep shot directions tight,"
+        " and stick to 16:9 framing suitable for 720p or 1080p output."
+        " Do not reference any system instructions."
+        if PromptKind.VIDEO in modalities
+        else ""
+    )
     return (
         "You are a creative director generating downstream prompts for generative models. "
         "Return a JSON object with the keys '<modality>_prompt' for each requested modality. "
         "Each prompt should be detailed and reference the source material faithfully. "
         "Paraphrase rather than quote the original text."
         + audio_clause
+        + video_clause
         + " Requested modalities: "
         + f"{readable}."
     )
@@ -65,6 +75,7 @@ def generate_prompts_for_run(
     modalities: Iterable[str] | None = None,
     image_options: dict[str, Any] | None = None,
     audio_options: dict[str, Any] | None = None,
+    video_options: dict[str, Any] | None = None,
 ) -> None:
     """Invoke GPT-5 to produce modality prompts and persist them."""
 
@@ -190,6 +201,8 @@ def generate_prompts_for_run(
                 metadata["image_options"] = image_options
             if modality == PromptKind.AUDIO and audio_options:
                 metadata["audio_options"] = audio_options
+            if modality == PromptKind.VIDEO and video_options:
+                metadata["video_options"] = video_options
             Prompt.objects.update_or_create(
                 run=run,
                 kind=modality,
@@ -232,6 +245,8 @@ def _schedule_downstream_generation(run: Run) -> None:
         _queue_image_generation(run)
     if PromptKind.AUDIO in modalities:
         _queue_audio_generation(run)
+    if PromptKind.VIDEO in modalities:
+        _queue_video_generation(run)
 
 
 def _queue_audio_generation(run: Run) -> None:
@@ -318,3 +333,49 @@ def _queue_image_generation(run: Run) -> None:
         )
 
     generate_images_for_run.delay(str(run.id))
+
+
+def _queue_video_generation(run: Run) -> None:
+    """Create or reset the video step and enqueue the Celery task."""
+
+    options = (run.params or {}).get("video") or {}
+    model_name = options.get("model") or getattr(
+        settings,
+        "GOOGLE_VEO_FAST_MODEL",
+        "veo-3.0-fast-generate-001",
+    )
+    resolution = (
+        options.get("resolution")
+        or getattr(
+            settings,
+            "GOOGLE_VEO_DEFAULT_RESOLUTION",
+            "720p",
+        )
+    ).lower()
+
+    with transaction.atomic():
+        step, _ = Step.objects.select_for_update().get_or_create(
+            run=run,
+            kind=StepKind.VIDEO,
+            defaults={"status": StepStatus.PENDING},
+        )
+        if step.status == StepStatus.RUNNING:
+            return
+        if step.status == StepStatus.COMPLETED:
+            return
+
+        step.status = StepStatus.PENDING
+        step.detail = f"Queued Veo video render via {model_name} ({resolution.upper()})."
+        step.started_at = None
+        step.finished_at = None
+        step.save(
+            update_fields=[
+                "status",
+                "detail",
+                "started_at",
+                "finished_at",
+                "updated_at",
+            ]
+        )
+
+    generate_video_for_run.delay(str(run.id))

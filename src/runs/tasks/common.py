@@ -36,7 +36,8 @@ def _expected_step_kinds(run: Run) -> set[str]:
         kinds.add(StepKind.IMAGE)
     if PromptKind.AUDIO in modalities:
         kinds.add(StepKind.AUDIO)
-    # Video will be appended here once implemented.
+    if PromptKind.VIDEO in modalities:
+        kinds.add(StepKind.VIDEO)
     return kinds
 
 

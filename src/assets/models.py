@@ -97,6 +97,37 @@ class Asset(models.Model):
         return Path(self.file.name).name
 
     @property
+    def video_url(self) -> str:
+        """Return the playback URL for video assets."""
+
+        if self.kind == PromptKind.VIDEO and self.file:
+            return self.file.url
+        return ""
+
+    @property
+    def video_mime_type(self) -> str:
+        """Return the MIME type for the stored video clip."""
+
+        if self.kind != PromptKind.VIDEO:
+            return ""
+        meta = self.metadata or {}
+        mime = meta.get("mime_type")
+        if mime:
+            return str(mime)
+        return "video/mp4"
+
+    @property
+    def poster_url(self) -> str:
+        """Return a poster image for the video if one was captured."""
+
+        if self.kind != PromptKind.VIDEO:
+            return ""
+        meta = self.metadata or {}
+        inline = meta.get("poster_inline_base64")
+        if inline:
+            return f"data:image/jpeg;base64,{inline}"
+        return str(meta.get("poster_url", ""))
+
     def display_metadata(self) -> dict[str, str]:
         """Return the subset of metadata worth surfacing in the UI."""
 
@@ -111,6 +142,7 @@ class Asset(models.Model):
             "duration_seconds": lambda v: f"{float(v):.1f}s"
             if isinstance(v, (int, float))
             else str(v),
+            "resolution": lambda v: str(v).upper(),
         }
         cleaned: dict[str, str] = {}
         for key, transform in mappings.items():
