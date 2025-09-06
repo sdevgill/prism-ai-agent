@@ -7,14 +7,14 @@
     <section class="space-y-8">
         <header class="space-y-2">
             <h1 class="text-3xl font-semibold text-slate-900">Your generated assets</h1>
-            <p class="text-sm text-slate-600">Everything Prism makes is grouped by format and traces back to the source you provided.</p>
+            <p class="text-sm text-slate-600">All your generated content, organized by type and linked back to whatever you originally fed Prism.</p>
         </header>
 
         <form method="get" class="space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm" hx-get="{% url 'assets:library' %}" hx-target="#asset-results" hx-swap="innerHTML">
             <div class="grid gap-4 md:grid-cols-[2fr,1fr]">
                 <label class="block text-sm">
                     <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Search</span>
-                    <input type="search" name="q" placeholder="Search by source, title, or notes" class="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                    <input type="search" name="q" placeholder="Search by source, title, or anything really" class="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
                 </label>
                 <label class="block text-sm">
                     <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Source</span>

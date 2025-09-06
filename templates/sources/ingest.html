@@ -5,8 +5,8 @@
 {% block content %}
     <section class="space-y-8">
         <header class="space-y-2">
-            <h1 class="text-3xl font-semibold text-slate-900">Generate new assets</h1>
-            <p class="text-sm text-slate-600">Share a webpage or paste raw copy. Prism cleans it up, then builds images, narration, and video guides that stay true to the source.</p>
+            <h1 class="text-3xl font-semibold text-slate-900">Let's make some content</h1>
+            <p class="text-sm text-slate-600">Drop a link or paste some text. Prism will turn it into images, voiceovers, and videos that actually match your original idea.</p>
         </header>
 
         <form method="post" action="{% url 'sources:ingest' %}" class="space-y-10">
@@ -14,15 +14,15 @@
 
             <section class="space-y-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 1</p>
-                <h2 class="text-lg font-semibold text-slate-900">Name your run</h2>
-                {% include 'partials/components/form_field.html' with field_id='run_title' label='Give this run a title' description='Use something descriptive so you can find these assets later.' required=True control_template='sources/partials/title_control.html' %}
+                <h2 class="text-lg font-semibold text-slate-900">What should we call this?</h2>
+                {% include 'partials/components/form_field.html' with field_id='run_title' label='Give this run a title' description='Something you will remember later when you are digging through files.' required=True control_template='sources/partials/title_control.html' %}
             </section>
 
             <section class="space-y-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 2</p>
-                <h2 class="text-lg font-semibold text-slate-900">Choose how you will supply the content</h2>
+                <h2 class="text-lg font-semibold text-slate-900">How are you giving us the content?</h2>
                 <fieldset class="space-y-4">
-                    <legend class="text-sm font-semibold text-slate-700">How are you feeding the content?</legend>
+                    <legend class="text-sm font-semibold text-slate-700">Pick one:</legend>
                     <div class="flex flex-wrap gap-4 text-sm text-slate-600">
                         <label class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 shadow-sm focus-within:border-blue-500 cursor-pointer">
                             <input type="radio" name="input_mode" value="url" class="size-4 text-blue-600 focus:ring-blue-500" checked />
@@ -41,20 +41,20 @@
                 <h2 class="text-lg font-semibold text-slate-900">Provide the source material</h2>
                 <div class="space-y-6">
                     <div data-input-field="url">
-                        {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='Prism fetches the page, strips navigation chrome, and keeps the core story.' control_template='sources/partials/url_control.html' %}
+                        {% include 'partials/components/form_field.html' with field_id='source_url' label='Website URL' description='We will grab the page and ignore all the nav stuff to focus on the actual content.' control_template='sources/partials/url_control.html' %}
                     </div>
                     <div data-input-field="text" class="hidden">
-                        {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Drop in marketing copy, scripts, or notes (up to '|add:max_source_text_chars_display|add:' characters). Prism trims to roughly '|add:prompt_token_limit_display|add:' tokens before sending to the model.' control_template='sources/partials/text_control.html' %}
+                        {% include 'partials/components/form_field.html' with field_id='source_text' label='Paste text' description='Dump whatever you have got here (up to '|add:max_source_text_chars_display|add:' characters). We will trim it down to '|add:prompt_token_limit_display|add:' tokens if needed.' control_template='sources/partials/text_control.html' %}
                     </div>
                 </div>
             </section>
 
             <section class="space-y-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Step 4</p>
-                <h2 class="text-lg font-semibold text-slate-900">Pick the outputs</h2>
+                <h2 class="text-lg font-semibold text-slate-900">What do you want back?</h2>
                 <fieldset class="space-y-3">
                     <legend class="text-sm font-semibold text-slate-700">What should Prism generate?</legend>
-                    <p class="text-xs text-slate-500">Pick one or more outputs. You can always rerun from the same source with different formats.</p>
+                    <p class="text-xs text-slate-500">Pick one or more. You can always come back and generate different formats from the same content.</p>
                     {% with selected_modalities=form.modalities.value %}
                         <div class="space-y-2">
                             <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-blue-500 cursor-pointer">
@@ -64,7 +64,7 @@
                                 </span>
                                 <span>
                                     <span class="font-medium text-slate-800">Images <span class="text-xs font-normal text-slate-500">(up to 3 renders)</span></span>
-                                    <p class="text-xs text-slate-500">Moodboard frames, key visuals, and cover art ideas.</p>
+                                    <p class="text-xs text-slate-500">Hero shots, social media graphics, whatever visual stuff you need.</p>
                                 </span>
                             </label>
                             <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-purple-500 cursor-pointer">
@@ -74,7 +74,7 @@
                                 </span>
                                 <span>
                                     <span class="font-medium text-slate-800">Audio <span class="text-xs font-normal text-slate-500">(1 narration)</span></span>
-                                    <p class="text-xs text-slate-500">Narration comes back as an emotive Ash voice read, perfect for ~20 second radio spots.</p>
+                                    <p class="text-xs text-slate-500">AI voiceover that sounds pretty human. Great for ads or podcast clips (~20 seconds).</p>
                                 </span>
                             </label>
                             <label class="flex items-start gap-4 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus-within:border-emerald-500 cursor-pointer">
@@ -84,7 +84,7 @@
                                 </span>
                                 <span>
                                     <span class="font-medium text-slate-800">Video <span class="text-xs font-normal text-slate-500">(8-second clip)</span></span>
-                                    <p class="text-xs text-slate-500">Veo 3 renders a short 16:9 marketing beat with optional narration.</p>
+                                    <p class="text-xs text-slate-500">Short marketing video that actually looks good. Perfect for social posts.</p>
                                 </span>
                             </label>
                         </div>
@@ -94,7 +94,7 @@
 
             <section id="image-options" class="space-y-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 hidden" data-modality-options="image">
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600" data-step-label>Step 5</p>
-                <h2 class="text-lg font-semibold text-blue-800">Fine-tune image output</h2>
+                <h2 class="text-lg font-semibold text-blue-800">Tweak the image settings</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Image generation settings</p>
                 <label class="flex flex-col gap-1">
                     <span class="text-xs font-medium uppercase tracking-wide">How many images?</span>
@@ -110,9 +110,9 @@
                 <label class="flex flex-col gap-1">
                     <span class="text-xs font-medium uppercase tracking-wide">Quality</span>
                     <select name="image_quality" id="image_quality" class="cursor-pointer rounded-md border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                        <option value="low" {% if form.image_quality.value == 'low' %}selected{% endif %}>Low (fast, rough ideation)</option>
-                        <option value="medium" {% if form.image_quality.value == 'medium' or not form.image_quality.value %}selected{% endif %}>Medium (balanced)</option>
-                        <option value="high" {% if form.image_quality.value == 'high' %}selected{% endif %}>High (maximum fidelity)</option>
+                        <option value="low" {% if form.image_quality.value == 'low' %}selected{% endif %}>Low (fast and rough)</option>
+                        <option value="medium" {% if form.image_quality.value == 'medium' or not form.image_quality.value %}selected{% endif %}>Medium (good enough)</option>
+                        <option value="high" {% if form.image_quality.value == 'high' %}selected{% endif %}>High (best quality)</option>
                     </select>
                     {% if form.image_quality.errors %}
                         <p class="text-xs text-red-600">{{ form.image_quality.errors|join:', ' }}</p>
@@ -129,13 +129,13 @@
                         <p class="text-xs text-red-600">{{ form.image_size.errors|join:', ' }}</p>
                     {% endif %}
                 </label>
-                <p class="text-xs text-blue-600">GPT-Image-1 supports 1–3 renders per call and quality tiers Low/Medium/High. Pick what fits your brief.</p>
-                <p class="text-xs text-blue-600">Size options map to GPT-Image-1’s supported 1024 and 1536 combinations.</p>
+                <p class="text-xs text-blue-600">You can get 1-3 images at different quality levels. Pick whatever works for your project.</p>
+                <p class="text-xs text-blue-600">Sizes are optimized for different use cases—square for social, portrait for posters, landscape for headers.</p>
             </section>
 
             <section id="audio-options" class="space-y-3 rounded-lg border border-purple-100 bg-purple-50 px-4 py-3 text-sm text-purple-700 hidden" data-modality-options="audio">
                 <p class="text-xs font-semibold uppercase tracking-wide text-purple-600" data-step-label>Step 6</p>
-                <h2 class="text-lg font-semibold text-purple-800">Tune the narration</h2>
+                <h2 class="text-lg font-semibold text-purple-800">Pick a voice</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Audio generation settings</p>
                 <label class="flex flex-col gap-1">
                     <span class="text-xs font-medium uppercase tracking-wide">Voice preset</span>
@@ -158,12 +158,12 @@
                         <p class="text-xs text-red-600">{{ form.audio_format.errors|join:', ' }}</p>
                     {% endif %}
                 </label>
-                <p class="text-xs text-purple-600">We prime the <span data-audio-voice-label>Ash</span> voice with the system guidance "Speak in an emotive and friendly tone." so the read lands <span data-audio-voice-detail>like a warm radio spot</span>.</p>
+                <p class="text-xs text-purple-600">The <span data-audio-voice-label>Ash</span> voice is trained to sound natural and friendly <span data-audio-voice-detail>like a warm radio spot</span>.</p>
             </section>
 
             <section id="video-options" class="space-y-3 rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 hidden" data-modality-options="video">
                 <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600" data-step-label>Step 7</p>
-                <h2 class="text-lg font-semibold text-emerald-800">Shape the Veo render</h2>
+                <h2 class="text-lg font-semibold text-emerald-800">Video quality settings</h2>
                 <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Video generation settings</p>
                 <label class="flex flex-col gap-1">
                     <span class="text-xs font-medium uppercase tracking-wide">Model</span>
@@ -191,16 +191,16 @@
                         <p class="text-xs text-red-600">{{ form.video_resolution.errors|join:', ' }}</p>
                     {% endif %}
                 </label>
-                <p class="text-xs text-emerald-600">Veo clips top out at roughly eight seconds, so we keep the script tight for the best render.</p>
-                <p class="text-xs text-emerald-600">720p exports are faster to preview; switch to 1080p when you’re happy with the direction.</p>
+                <p class="text-xs text-emerald-600">Videos are about 8 seconds long, so we keep the content punchy for better results.</p>
+                <p class="text-xs text-emerald-600">720p renders faster. Go with 1080p when you're ready for the final version.</p>
             </section>
 
             <aside class="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                <h2 class="font-semibold text-blue-800">Quick heads-up</h2>
+                <h2 class="font-semibold text-blue-800">Just so you know</h2>
                 <ul class="mt-2 space-y-1 text-xs text-blue-700">
-                    <li>• Prism shows progress live once the backend hooks in.</li>
-                    <li>• You’ll find every output in the Assets page grouped by source.</li>
-                    <li>• Need to iterate? Re-run with the same link and different formats.</li>
+                    <li>• You'll see live progress updates as things generate.</li>
+                    <li>• Everything ends up in your Assets page, organized by source.</li>
+                    <li>• Want to try different formats? Just rerun with the same content.</li>
                 </ul>
             </aside>
 

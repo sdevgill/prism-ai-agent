@@ -23,15 +23,15 @@
 
     <dl class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
         <div>
-            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Requested modalities</dt>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">What you asked for</dt>
             <dd>{% if modality_labels %}{{ modality_labels|join:", " }}{% else %}—{% endif %}</dd>
         </div>
         <div>
-            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Updated</dt>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Last update</dt>
             <dd>{{ run.updated_at|date:"M j, Y H:i" }}</dd>
         </div>
         <div>
-            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Submitted</dt>
+            <dt class="text-xs font-semibold uppercase tracking-wide text-slate-500">Started</dt>
             <dd>{{ run.created_at|date:"M j, Y H:i" }}</dd>
         </div>
         <div>
@@ -64,12 +64,12 @@
                     </li>
                 {% endfor %}
             {% else %}
-                <li class="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-500">Steps will appear shortly.</li>
+                <li class="rounded-lg border border-dashed border-slate-200 px-3 py-2 text-xs text-slate-500">Processing steps will show up here.</li>
             {% endif %}
         </ul>
     </section>
 
     {% if not poll_active %}
-        <p class="text-xs font-medium text-slate-600">This run is finished. Head to the Assets page to explore the new files.</p>
+        <p class="text-xs font-medium text-slate-600">All done! Check out your new stuff on the Assets page.</p>
     {% endif %}
 </div>
